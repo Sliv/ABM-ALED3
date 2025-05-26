@@ -1,0 +1,32 @@
+<div class="card">
+  <div class="card-content">
+    
+    <div class="card-img" *ngIf="iconos.length > 0">
+      <img *ngFor="let img of imgs" [src]="img" class="img" alt="img" />
+    </div>
+
+    <h3 class="card-title" *ngIf="titulo">{{ titulo }}</h3>
+
+    <p class="card-precio" *ngIf="precio">{{ precio }}</p>
+
+    <p class="card-descripcion" *ngIf="descripcion">{{ descripcion }}</p>
+
+    <div class="card-botones" *ngIf="botones.length > 0">
+      <a *ngFor="let btn of botones; let i = index"
+         [href]="btn.enlace"
+         [ngClass]="i === 0 ? 'btn btn-fill' : 'btn btn-outline'">
+        {{ btn.texto }}
+      </a>
+    </div>
+
+    <ul class="card-beneficios" *ngIf="beneficios.length > 0">
+      <li *ngFor="let beneficio of beneficios"> • {{ beneficio }}</li>
+    </ul>
+
+    <div class="card-iconos" *ngIf="iconos.length > 0">
+      <img *ngFor="let icono of iconos" [src]="icono" class="icono" alt="icono" />
+    </div>
+
+    <a *ngIf="linkInfo" [href]="linkInfo" class="card-link">Más información</a>
+  </div>
+</div>

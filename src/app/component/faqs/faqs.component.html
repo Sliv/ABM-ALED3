@@ -1,0 +1,24 @@
+<div class="faq-container">
+  <h2>Preguntas más frecuentes</h2>
+
+  <div class="faq-botones">
+    <button (click)="expandirTodos()">Expandir todo</button>
+    <button (click)="contraerTodos()">Contraer todo</button>
+  </div>
+
+  <div *ngFor="let faq of faqs; index as i" class="faq-item">
+    <div class="faq-header">
+      <span class="faq-numero">0{{ i + 1 }}/</span>
+      <div class="faq-pregunta" (click)="toggleRespuesta(faq)">
+        {{ faq.pregunta }}
+      </div>
+      <button class="faq-toggle" (click)="toggleRespuesta(faq)">
+        {{ faq.estaAbierto ? '-' : '+' }}
+      </button>
+    </div>
+
+    <div *ngIf="faq.estaAbierto" class="faq-respuesta">
+      {{ faq.respuesta }}
+    </div>
+  </div>
+</div>

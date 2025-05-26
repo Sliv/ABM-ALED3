@@ -1,0 +1,87 @@
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 24px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  max-width: 320px;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.card-precio {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.card-descripcion {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.card-beneficios {
+  padding-left: 16px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.card-botones {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.card-botones .btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.card-botones .btn-fill {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+}
+
+.card-botones .btn-outline {
+  border: 1px solid #4f46e5;
+  color: #4f46e5;
+  background-color: transparent;
+}
+
+.card-iconos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.card-iconos .icono {
+  height: 24px;
+}
+
+.card-link {
+  font-size: 0.85rem;
+  color: #333;
+  border-top: 1px solid #ddd;
+  padding-top: 12px;
+  text-decoration: none;
+}

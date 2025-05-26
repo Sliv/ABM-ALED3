@@ -1,0 +1,50 @@
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.usuario-table {
+  width: 100%;
+  min-width: 600px; 
+  border-collapse: collapse;
+}
+
+mat-header-cell, mat-cell {
+  padding: 12px;
+  font-size: 14px;
+  border-bottom: 1px solid #e0e0e0;
+  white-space: nowrap;
+}
+
+mat-header-cell {
+  background-color: #ffe5e5;
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.search-bar {
+  margin: 16px 0;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+mat-icon-button {
+  margin-right: 4px;
+}
+
+@media (max-width: 768px) {
+  mat-header-cell, mat-cell {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .usuario-table {
+    min-width: unset; 
+  }
+
+  .search-bar {
+    margin: 12px 0;
+  }
+}

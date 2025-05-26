@@ -1,0 +1,81 @@
+.example-form {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #eeecec; 
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.datos {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+div input[type="button"] {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 25px;
+  background-color: #0a7fec;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+div input[type="button"]:hover {
+  background-color: #005bb5;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.form-buttons button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: white;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.form-buttons button[color="warn"] {
+  background-color: #f44336; 
+  color: white;
+}
+
+.form-buttons button[color="warn"]:hover {
+  background-color: #ff1313;
+  box-shadow: 0 4px 10px rgba(244, 67, 54, 0.4);
+}
+
+
+.form-buttons button[color="primary"] {
+  background-color: #0080ff;
+  color: white;
+}
+
+.form-buttons button[color="primary"]:hover {
+  background-color: #0044ff;
+  box-shadow: 0 4px 10px rgba(25, 118, 210, 0.4);
+}
+
+@media (max-width: 600px) {
+  .example-form {
+    margin: 20px;
+    padding: 15px;
+  }
+
+  div input[type="button"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+

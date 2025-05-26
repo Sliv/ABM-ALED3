@@ -1,0 +1,67 @@
+<div class="table-container">
+  <div class="search-bar">
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar</mat-label>
+      <input matInput placeholder="Nombre o Email" (input)="BuscarUsuario($event)">
+    </mat-form-field>
+  </div>
+
+  <mat-table *ngIf="usuarios.length > 0" [dataSource]="filtrarUsuarios" class="usuario-table">
+    
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._id}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="nombre">
+      <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._nombre}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="apellido">
+      <mat-header-cell *matHeaderCellDef> Apellido </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._apellido}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="fechaNacimiento">
+      <mat-header-cell *matHeaderCellDef> Fecha de nacimiento </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._fechaNacimiento}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._email}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="rol">
+      <mat-header-cell *matHeaderCellDef> Rol </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._rol}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="direccion">
+      <mat-header-cell *matHeaderCellDef> Direccion </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._direccion}} </mat-cell>
+    </ng-container>
+
+        <ng-container matColumnDef="telefono">
+      <mat-header-cell *matHeaderCellDef> Telefono </mat-header-cell>
+      <mat-cell *matCellDef="let user"> {{user._telefono}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="acciones">
+      <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+      <mat-cell *matCellDef="let user">
+        <button mat-icon-button color="primary" (click)="editar(user._id)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="eliminar(user._id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="Columnas"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: Columnas;"></mat-row>
+
+  </mat-table>
+</div>
