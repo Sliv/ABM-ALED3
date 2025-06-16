@@ -1,0 +1,32 @@
+<div class="producto-container">
+  <h2>Seleccionar productos para la compra</h2>
+
+  <div class="lista-productos">
+    <div *ngFor="let producto of productos" class="card-producto">
+      <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
+      <div>
+        <h3>{{ producto.nombre }}</h3>
+        <p>{{ producto.descripcion }}</p>
+        <p><strong>${{ producto.precioARS }}</strong></p>
+        <button (click)="agregarProducto(producto)">Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="productosSeleccionados.length > 0 && !mostrarFactura" class="panel-acciones">
+    <h3>Productos seleccionados:</h3>
+    <ul>
+      <li *ngFor="let item of productosSeleccionados">
+        {{ item.producto.nombre }} x {{ item.cantidad }}
+      </li>
+    </ul>
+    <button (click)="confirmarCompra()">Generar Factura</button>
+    <button (click)="cancelarCompra()">Cancelar</button>
+  </div>
+
+    <app-factura
+    *ngIf="mostrarFactura"
+    [productosSeleccionados]="productosSeleccionados"
+    (confirmarCompra)="compraConfirmada()"
+    ></app-factura>
+</div>

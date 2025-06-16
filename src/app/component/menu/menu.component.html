@@ -2,20 +2,48 @@
   <div class="logo">
     <img src="assets/logo.png" alt="Logo" />
   </div>
+
   <nav class="nav-inline">
     <ul>
       <li><a routerLink="">Home</a></li>
-      <li><a routerLink="listaUsuario">Lista</a></li>
-      <li><a routerLink="usuario">Nuevo</a></li>
+      <li><a routerLink="comprar-productos">Comprar</a></li>
+
+      <ng-container *ngIf="isLoggedIn">
+        <li><a routerLink="mis-compras">Mis compras</a></li>
+        <li *ngIf="rol === 'administrador'">
+          <a routerLink="producto">Admin Productos</a>
+        </li>
+        <li><a (click)="logout()" style="cursor: pointer;">Cerrar sesión</a></li>
+      </ng-container>
+
+      <ng-container *ngIf="!isLoggedIn">
+        <li><a routerLink="login">Iniciar sesión</a></li>
+        <li><a routerLink="sign-up">Registrarse</a></li>
+      </ng-container>
     </ul>
   </nav>
+
   <button class="menu-toggle" (click)="toggleMenu()">☰</button>
 </header>
 
+<!-- Menú lateral para móviles -->
 <nav class="nav-side" [class.open]="menuVisible">
   <ul>
-    <li><a routerLink="" (click)="toggleMenu()">Home</a></li>
-    <li><a routerLink="listaUsuario" (click)="toggleMenu()">Lista</a></li>
-    <li><a routerLink="usuario" (click)="toggleMenu()">Nuevo</a></li>
+    <li><a routerLink="">Home</a></li>
+    <li><a routerLink="listaUsuario">Categorías</a></li>
+    <li><a routerLink="comprar-productos">Comprar</a></li>
+
+    <ng-container *ngIf="isLoggedIn">
+      <li><a routerLink="mis-compras">Mis compras</a></li>
+      <li *ngIf="rol === 'administrador'">
+        <a routerLink="producto">Crear producto</a>
+      </li>
+      <li><a (click)="logout()" style="cursor: pointer;">Cerrar sesión</a></li>
+    </ng-container>
+
+    <ng-container *ngIf="!isLoggedIn">
+      <li><a routerLink="login">Iniciar sesión</a></li>
+      <li><a routerLink="sign-up">Registrarse</a></li>
+    </ng-container>
   </ul>
 </nav>

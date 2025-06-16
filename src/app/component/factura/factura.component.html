@@ -1,0 +1,35 @@
+<div class="factura-container">
+  <h3>Detalle de la Factura</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario (ARS)</th>
+        <th>Subtotal (ARS)</th>
+        <th>Subtotal (USD)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of productosSeleccionados">
+        <td>{{ item.producto.nombre }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>${{ item.producto.precioARS | number: '1.2-2' }}</td>
+        <td>${{ item.cantidad * item.producto.precioARS | number: '1.2-2' }}</td>
+        <td>${{ (item.cantidad * item.producto.precioARS) / tipoCambioUSD | number: '1.2-2' }}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3"><strong>Total</strong></td>
+        <td><strong>${{ totalARS | number: '1.2-2' }}</strong></td>
+        <td><strong>${{ totalUSD | number: '1.2-2' }}</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="acciones-factura">
+    <button (click)="confirmar()">Confirmar Compra</button>
+    <button (click)="cancelar()">Cancelar</button>
+  </div>
+</div>

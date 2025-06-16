@@ -1,0 +1,33 @@
+.lista-productos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.card-producto {
+  width: 220px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0.5rem;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background-color: #fff;
+}
+
+.card-producto img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.panel-acciones {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.panel-acciones ul {
+  list-style: none;
+  padding: 0;
+}

@@ -1,0 +1,40 @@
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../servicios/auth.service';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent {
+  loginForm: FormGroup;
+  errorMessage = '';
+
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.valid) {
+      const { username, password } = this.loginForm.value;
+      this.authService.login(username, password).subscribe({
+        next: res => {
+          localStorage.setItem('user', JSON.stringify(res.user));
+          alert('Login exitoso');
+          this.router.navigate(['']);
+        },
+        error: err => {
+          this.errorMessage = err.error?.message || 'Error en el login';
+        }
+      });
+    }
+  }
+}

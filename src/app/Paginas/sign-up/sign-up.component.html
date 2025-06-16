@@ -1,0 +1,21 @@
+<div class="login-wrapper"> 
+  <div class="login-card">
+    <div class="left-panel">
+      <h2>Welcome!</h2>
+      <p>Sign up and create your account.<br />For Free!</p>
+    </div>
+    <div class="right-panel">
+      <h3>Sign Up</h3>
+      <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+        <label for="username">Username/Email address<span class="required">*</span></label>
+        <input type="text" id="username" formControlName="username" placeholder="Username or Email" />
+
+        <label for="password">Password<span class="required">*</span></label>
+        <input type="password" id="password" formControlName="password" placeholder="Password" />
+
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <button type="submit" [disabled]="signUpForm.invalid" class="signin-btn">Register</button>
+      </form>
+    </div>
+  </div>
+</div>
