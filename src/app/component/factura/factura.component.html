@@ -14,12 +14,12 @@
       <tr *ngFor="let item of productosSeleccionados">
         <td>{{ item.producto.nombre }}</td>
         <td>{{ item.cantidad }}</td>
-        <td>${{ item.producto.precioARS | number: '1.2-2' }}</td>
-        <td>${{ (item.cantidad * item.producto.precioARS) | number: '1.2-2' }}</td>
+        <td>${{ item.producto.precio | number: '1.2-2' }}</td>
+        <td>${{ (item.cantidad * item.producto.precio) | number: '1.2-2' }}</td>
         <td>
           {{
             tipoCambioUSD
-              ? (((item.cantidad * item.producto.precioARS) / tipoCambioUSD) | number: '1.2-2')
+              ? (((item.cantidad * item.producto.precio) / tipoCambioUSD) | number: '1.2-2')
               : 'Cargando...'
           }}
         </td>

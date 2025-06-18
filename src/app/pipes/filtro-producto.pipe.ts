@@ -10,7 +10,7 @@ export class FiltroProductoPipe implements PipeTransform {
     const texto = filtro.toLowerCase();
     return productos.filter(p =>
       p.nombre.toLowerCase().includes(texto) ||
-      p.categoria.toLowerCase().includes(texto)
+      (p.categoria?.toLowerCase().includes(texto) ?? false)
     );
   }
 }

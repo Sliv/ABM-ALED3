@@ -1,12 +1,19 @@
 <div class="historial-container">
   <h2>Mis Compras</h2>
+
   <div *ngIf="compras.length === 0">No hay compras registradas.</div>
-  
+
   <ul *ngIf="compras.length > 0">
     <li *ngFor="let compra of compras">
-      <strong>{{ compra.nombre }}</strong> - ${{ compra.precio }}
-      <br />
       <small>Fecha: {{ compra.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</small>
+      <ul>
+        <li *ngFor="let item of compra.productos">
+          <strong>{{ item.producto.nombre }}</strong> - 
+          ${{ item.producto.precio * item.cantidad | number: '1.2-2' }} 
+          (x{{ item.cantidad }})
+        </li>
+      </ul>
+      <hr />
     </li>
   </ul>
 </div>

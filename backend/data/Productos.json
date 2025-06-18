@@ -1,0 +1,34 @@
+[
+  {
+    "nombre": "Zapatillas",
+    "descripcion": "Zapatillas Nike",
+    "precioARS": 55000,
+    "categoria": "Indumentaria",
+    "imagen": "asd",
+    "id": 1
+  },
+  {
+    "nombre": "Remera",
+    "descripcion": "Remera Nike",
+    "precioARS": 20000,
+    "categoria": "Indumentaria",
+    "imagen": "a",
+    "id": 2
+  },
+  {
+    "nombre": "Playstation",
+    "descripcion": "Consola de videojuegos",
+    "precioARS": 1000000,
+    "categoria": "Tecnología",
+    "imagen": "1",
+    "id": 3
+  },
+  {
+    "nombre": "Sillon",
+    "descripcion": "Sillon de cuero",
+    "precioARS": 500000,
+    "categoria": "Muebles",
+    "imagen": "a",
+    "id": 4
+  }
+]

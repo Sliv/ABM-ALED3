@@ -32,7 +32,7 @@
         <td><img [src]="producto.imagen" alt="{{producto.nombre}}"></td>
         <td>{{ producto.nombre }}</td>
         <td>{{ producto.categoria }}</td>
-        <td>${{ producto.precioARS }}</td>
+        <td>${{ producto.precio }}</td>
         <td>
           <button (click)="editarProducto(producto)">Editar</button>
           <button class="eliminar" (click)="eliminarProducto(producto.id)">Eliminar</button>

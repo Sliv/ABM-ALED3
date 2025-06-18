@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-mis-compras',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './mis-compras.component.html',
   styleUrls: ['./mis-compras.component.css']
@@ -15,12 +16,8 @@ export class MisComprasComponent implements OnInit {
   constructor(private compraService: CompraService) {}
 
   ngOnInit(): void {
-
-    const comprasData = this.compraService.obtenerCompras();
-
-    this.compras = comprasData.map(c => ({
-      ...c,
-      fecha: new Date(c.fecha) 
-    }));
+    this.compraService.obtenerCompras().subscribe(comprasData => {
+      this.compras = comprasData;  // Sin conversión de fecha
+    });
   }
 }

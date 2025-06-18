@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ProductoService } from '../../servicios/producto.service';
-import { Producto } from '../../Modelos/producto';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProductoService } from '../../servicios/producto.service';
+import { Producto } from '../../Modelos/producto';
+import { CompraService } from '../../servicios/compra.service';
+import { Compra } from '../../Modelos/compra.model';
 
 @Component({
   selector: 'app-producto',
@@ -16,55 +18,79 @@ export class ProductoComponent implements OnInit {
   producto!: Producto;
   cantidad: number = 1;
 
-  constructor(private route: ActivatedRoute, private productoService: ProductoService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private productoService: ProductoService,
+    private compraService: CompraService
+  ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    const productos = this.productoService.obtenerProductos();
-    const encontrado = productos.find(p => p.id === id);
-    if (encontrado) {
-      this.producto = encontrado;
-    }
+    this.productoService.obtenerProductos().subscribe(productos => {
+      const prod = productos.find(p => p.id === id);
+      if (prod) {
+        this.producto = prod;
+      } else {
+        this.router.navigate(['/comprar-productos']);
+      }
+    });
   }
 
-  private getCarritoKey(): string | null {
+  agregarAlCarrito(): void {
     const usuario = localStorage.getItem('user');
-    if (!usuario) return null;
-    const username = JSON.parse(usuario).username;
-    return 'carrito_' + username;
-  }
+    const username = usuario ? JSON.parse(usuario).username : null;
 
-  agregarAlCarrito() {
-    const key = this.getCarritoKey();
-
-    if (!key) {
+    if (!username) {
       alert('Debes iniciar sesión para agregar productos al carrito.');
+      this.router.navigate(['/login']);
       return;
     }
 
-    const datos = localStorage.getItem(key);
-    let carrito = datos ? JSON.parse(datos) : [];
+    const carritoKey = 'carrito_' + username;
+    const carritoActual = JSON.parse(localStorage.getItem(carritoKey) || '[]');
 
-    const index = carrito.findIndex((item: any) => item.producto.id === this.producto.id);
-    if (index >= 0) {
-      carrito[index].cantidad += this.cantidad;
+    const existente = carritoActual.find((p: any) => p.producto?.id === this.producto.id);
+
+    if (existente) {
+      existente.cantidad += this.cantidad;
     } else {
-      carrito.push({ producto: this.producto, cantidad: this.cantidad });
+      carritoActual.push({ producto: this.producto, cantidad: this.cantidad });
     }
 
-    localStorage.setItem(key, JSON.stringify(carrito));
+    localStorage.setItem(carritoKey, JSON.stringify(carritoActual));
     alert('Producto agregado al carrito');
   }
 
-  comprarAhora() {
-    const key = this.getCarritoKey();
+  comprarAhora(): void {
+    const usuario = localStorage.getItem('user');
+    const username = usuario ? JSON.parse(usuario).username : null;
 
-    if (!key) {
-      alert('Debes iniciar sesión para comprar productos.');
+    if (!username) {
+      alert('Debes iniciar sesión para realizar una compra.');
+      this.router.navigate(['/login']);
       return;
     }
 
-    this.agregarAlCarrito();
-    alert('Compra directa en proceso (simulada)');
+    const compra: Compra = {
+      username,
+      productos: [
+        { producto: this.producto, cantidad: this.cantidad }
+      ],
+      fecha: new Date().toISOString()
+    };
+
+    this.compraService.agregarCompra(compra).subscribe({
+      next: () => {
+        const productosAComprar = [
+          { producto: this.producto, cantidad: this.cantidad }
+        ];
+        localStorage.setItem('factura_temp', JSON.stringify(productosAComprar));
+        this.router.navigate(['/factura']);
+      },
+      error: () => {
+        alert('Error al guardar la compra');
+      }
+    });
   }
 }

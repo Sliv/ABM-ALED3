@@ -498,5 +498,20 @@
     "username": "Probandodenuevo",
     "password": "1111",
     "rol": "usuario"
+  },
+  {
+    "username": "Testing",
+    "password": "1111",
+    "rol": "usuario"
+  },
+  {
+    "username": "Comprador",
+    "password": "5555",
+    "rol": "usuario"
+  },
+  {
+    "username": "Otro",
+    "password": "3333",
+    "rol": "usuario"
   }
 ]

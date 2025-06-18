@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-producto',
-  standalone: true, 
+  standalone: true,
   templateUrl: './listar-producto.component.html',
   styleUrls: ['./listar-producto.component.css'],
   imports: [
@@ -32,7 +32,7 @@ export class ListarProductoComponent implements OnInit {
 
   ngOnInit(): void {
     this.inicializarFormulario();
-    this.productos = this.productoService.obtenerProductos();
+    this.cargarProductos();
   }
 
   inicializarFormulario() {
@@ -45,6 +45,13 @@ export class ListarProductoComponent implements OnInit {
     });
   }
 
+  cargarProductos() {
+    this.productoService.obtenerProductos().subscribe({
+      next: (productos) => this.productos = productos,
+      error: (err) => console.error('Error al obtener productos:', err)
+    });
+  }
+
   guardarProducto() {
     if (this.productoForm.invalid) return;
 
@@ -53,14 +60,21 @@ export class ListarProductoComponent implements OnInit {
         ...this.productoEnEdicion,
         ...this.productoForm.value
       };
-      this.productoService.actualizarProducto(productoActualizado);
-      this.modoEdicion = false;
-      this.productoEnEdicion = null;
+      this.productoService.actualizarProducto(productoActualizado).subscribe({
+        next: () => {
+          this.modoEdicion = false;
+          this.productoEnEdicion = null;
+          this.cargarProductos();
+        },
+        error: (err) => console.error('Error al actualizar producto:', err)
+      });
     } else {
-      this.productoService.agregarProducto(this.productoForm.value);
+      this.productoService.agregarProducto(this.productoForm.value).subscribe({
+        next: () => this.cargarProductos(),
+        error: (err) => console.error('Error al agregar producto:', err)
+      });
     }
 
-    this.productos = this.productoService.obtenerProductos();
     this.productoForm.reset();
   }
 
@@ -71,7 +85,9 @@ export class ListarProductoComponent implements OnInit {
   }
 
   eliminarProducto(id: number) {
-    this.productoService.eliminarProducto(id);
-    this.productos = this.productoService.obtenerProductos();
+    this.productoService.eliminarProducto(id).subscribe({
+      next: () => this.cargarProductos(),
+      error: (err) => console.error('Error al eliminar producto:', err)
+    });
   }
 }

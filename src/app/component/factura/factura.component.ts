@@ -29,7 +29,7 @@ export class FacturaComponent implements OnInit {
 
   get totalARS(): number {
     return this.productosSeleccionados.reduce(
-      (total, item) => total + item.producto.precioARS * item.cantidad,
+      (total, item) => total + item.producto.precio * item.cantidad,
       0
     );
   }
