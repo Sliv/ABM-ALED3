@@ -7,7 +7,7 @@ describe('SignUpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SignUpComponent] // ✅ ya que es standalone
+      imports: [SignUpComponent] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(SignUpComponent);

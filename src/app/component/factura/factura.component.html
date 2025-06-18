@@ -15,21 +15,32 @@
         <td>{{ item.producto.nombre }}</td>
         <td>{{ item.cantidad }}</td>
         <td>${{ item.producto.precioARS | number: '1.2-2' }}</td>
-        <td>${{ item.cantidad * item.producto.precioARS | number: '1.2-2' }}</td>
-        <td>${{ (item.cantidad * item.producto.precioARS) / tipoCambioUSD | number: '1.2-2' }}</td>
+        <td>${{ (item.cantidad * item.producto.precioARS) | number: '1.2-2' }}</td>
+        <td>
+          {{
+            tipoCambioUSD
+              ? (((item.cantidad * item.producto.precioARS) / tipoCambioUSD) | number: '1.2-2')
+              : 'Cargando...'
+          }}
+        </td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
         <td colspan="3"><strong>Total</strong></td>
         <td><strong>${{ totalARS | number: '1.2-2' }}</strong></td>
-        <td><strong>${{ totalUSD | number: '1.2-2' }}</strong></td>
+        <td>
+          {{
+            tipoCambioUSD
+              ? (totalUSD | number: '1.2-2')
+              : 'Cargando...'
+          }}
+        </td>
       </tr>
     </tfoot>
   </table>
 
   <div class="acciones-factura">
-    <button (click)="confirmar()">Confirmar Compra</button>
-    <button (click)="cancelar()">Cancelar</button>
+    <button disabled>Generar PDF</button> 
   </div>
 </div>

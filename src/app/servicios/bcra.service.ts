@@ -28,33 +28,41 @@ export class BcraService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerTipoCambioUSD(): Observable<number> {
-    const hoy = new Date().toISOString().split('T')[0];
-    const desde = '2025-06-01';
-    const url = `${this.apiUrl}?fechaDesde=${desde}&fechaHasta=${hoy}`;
 
-    return this.http.get<ApiResponse>(url).pipe(
-      map(response => {
-        const resultados = response.results;
-        if (!resultados || resultados.length === 0) {
-          return 0;
-        }
-
-        const ultimoResultado = resultados[resultados.length - 1];
-        if (!ultimoResultado.detalle || ultimoResultado.detalle.length === 0) {
-          return 0;
-        }
-
-        const detalleUSD = ultimoResultado.detalle.find(d => d.codigoMoneda === 'USD');
-        return detalleUSD ? detalleUSD.tipoCotizacion : 0;
-      }),
-      catchError(() => of(0))
-    );
+  private formatDate(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const dd = date.getDate().toString().padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
-  obtenerTipoCambioCada30Min(): Observable<number> {
-    return timer(0, 30 * 60 * 1000).pipe(
-      switchMap(() => this.obtenerTipoCambioUSD())
-    );
-  }
+obtenerTipoCambioUSD(): Observable<number> {
+  const hoy = new Date();
+  const fechaHasta = this.formatDate(hoy);
+
+  const desdeDate = new Date(hoy);
+  desdeDate.setDate(hoy.getDate() - 30);
+  const fechaDesde = this.formatDate(desdeDate);
+
+  const url = `${this.apiUrl}?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+
+  return this.http.get<ApiResponse>(url).pipe(
+    map(response => {
+      const resultados = response.results;
+      if (!resultados || resultados.length === 0) {
+        return 0;
+      }
+      
+      const resultadoMasReciente = resultados[0];
+
+      if (!resultadoMasReciente.detalle || resultadoMasReciente.detalle.length === 0) {
+        return 0;
+      }
+
+      const detalleUSD = resultadoMasReciente.detalle.find(d => d.codigoMoneda === 'USD');
+      return detalleUSD ? detalleUSD.tipoCotizacion : 0;
+    }),
+    catchError(() => of(0))
+  );
+}
 }

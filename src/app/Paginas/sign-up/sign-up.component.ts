@@ -22,16 +22,17 @@ export class SignUpComponent {
     private authService: AuthService
   ) {
     this.signUpForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(4)]],
+      rol: ['usuario'] 
     });
   }
 
   onSubmit(): void {
     if (this.signUpForm.valid) {
-      const { username, password } = this.signUpForm.value;
+      const { username, password, rol } = this.signUpForm.value;
 
-      this.authService.register(username, password).subscribe({
+      this.authService.register(username, password, rol).subscribe({
         next: () => {
           alert('Usuario registrado exitosamente');
           this.router.navigate(['login']);
@@ -41,6 +42,8 @@ export class SignUpComponent {
           this.errorMessage = err.message || 'Error en el registro';
         }
       });
+    } else {
+      this.errorMessage = 'Por favor completá todos los campos correctamente.';
     }
   }
 }

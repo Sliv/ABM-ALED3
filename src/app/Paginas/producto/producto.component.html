@@ -1,43 +1,16 @@
-<div class="producto-container">
+<div class="producto-detalle">
+  <img [src]="producto.imagen" alt="{{ producto.nombre }}" class="producto-img" />
+  <div class="producto-info">
+    <h1>{{ producto.nombre }}</h1>
+    <p class="descripcion">{{ producto.descripcion }}</p>
+    <p class="precio">$ {{ producto.precioARS }}</p>
 
-  <h2>Gestión de Productos</h2>
+    <label for="cantidad">Cantidad:</label>
+    <input type="number" [(ngModel)]="cantidad" min="1" id="cantidad" />
 
-  <div class="formulario-producto">
-    <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
-      <input formControlName="nombre" placeholder="Nombre" />
-      <input formControlName="descripcion" placeholder="Descripción" />
-      <input formControlName="precioARS" type="number" placeholder="Precio ARS" />
-      <input formControlName="categoria" placeholder="Categoría" />
-      <input formControlName="imagen" placeholder="URL Imagen" />
-      <button type="submit">{{ modoEdicion ? 'Actualizar' : 'Agregar' }}</button>
-    </form>
+    <div class="acciones">
+      <button (click)="agregarAlCarrito()">Agregar al carrito</button>
+      <button (click)="comprarAhora()">Comprar ahora</button>
+    </div>
   </div>
-
-  <div class="filtro">
-    <input type="text" [(ngModel)]="filtroTexto" placeholder="Buscar por nombre o categoría..." />
-  </div>
-
-  <table class="tabla-productos">
-    <thead>
-      <tr>
-        <th>Imagen</th>
-        <th>Nombre</th>
-        <th>Categoría</th>
-        <th>Precio ARS</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let producto of productos | filtroProducto: filtroTexto">
-        <td><img [src]="producto.imagen" alt="{{producto.nombre}}"></td>
-        <td>{{ producto.nombre }}</td>
-        <td>{{ producto.categoria }}</td>
-        <td>${{ producto.precioARS }}</td>
-        <td>
-          <button (click)="editarProducto(producto)">Editar</button>
-          <button class="eliminar" (click)="eliminarProducto(producto.id)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 </div>

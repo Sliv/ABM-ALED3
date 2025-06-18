@@ -13,7 +13,7 @@ import { filter } from 'rxjs/operators';
 export class MenuComponent implements OnInit {
   menuVisible: boolean = false;
   isLoggedIn: boolean = false;
-  rol: string | null = null; // ← rol actual del usuario
+  rol: string | null = null; 
 
   constructor(private router: Router) {}
 

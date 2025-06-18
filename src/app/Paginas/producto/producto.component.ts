@@ -1,77 +1,70 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ProductoService } from '../../servicios/producto.service';
 import { Producto } from '../../Modelos/producto';
-import { CommonModule } from '@angular/common'; 
-import { FiltroProductoPipe } from '../../pipes/filtro-producto.pipe'; 
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-producto',
-  standalone: true, 
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './producto.component.html',
-  styleUrls: ['./producto.component.css'],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FiltroProductoPipe,
-    FormsModule
-  ]
+  styleUrls: ['./producto.component.css']
 })
 export class ProductoComponent implements OnInit {
-  productoForm!: FormGroup;
-  productos: Producto[] = [];
-  modoEdicion: boolean = false;
-  productoEnEdicion: Producto | null = null;
-  filtroTexto: string = '';
+  producto!: Producto;
+  cantidad: number = 1;
 
-  constructor(
-    private fb: FormBuilder,
-    private productoService: ProductoService
-  ) {}
+  constructor(private route: ActivatedRoute, private productoService: ProductoService) {}
 
   ngOnInit(): void {
-    this.inicializarFormulario();
-    this.productos = this.productoService.obtenerProductos();
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const productos = this.productoService.obtenerProductos();
+    const encontrado = productos.find(p => p.id === id);
+    if (encontrado) {
+      this.producto = encontrado;
+    }
   }
 
-  inicializarFormulario() {
-    this.productoForm = this.fb.group({
-      nombre: ['', Validators.required],
-      descripcion: ['', Validators.required],
-      precioARS: ['', [Validators.required, Validators.min(1)]],
-      categoria: ['', Validators.required],
-      imagen: ['', Validators.required]
-    });
+  private getCarritoKey(): string | null {
+    const usuario = localStorage.getItem('user');
+    if (!usuario) return null;
+    const username = JSON.parse(usuario).username;
+    return 'carrito_' + username;
   }
 
-  guardarProducto() {
-    if (this.productoForm.invalid) return;
+  agregarAlCarrito() {
+    const key = this.getCarritoKey();
 
-    if (this.modoEdicion && this.productoEnEdicion) {
-      const productoActualizado: Producto = {
-        ...this.productoEnEdicion,
-        ...this.productoForm.value
-      };
-      this.productoService.actualizarProducto(productoActualizado);
-      this.modoEdicion = false;
-      this.productoEnEdicion = null;
-    } else {
-      this.productoService.agregarProducto(this.productoForm.value);
+    if (!key) {
+      alert('Debes iniciar sesión para agregar productos al carrito.');
+      return;
     }
 
-    this.productos = this.productoService.obtenerProductos();
-    this.productoForm.reset();
+    const datos = localStorage.getItem(key);
+    let carrito = datos ? JSON.parse(datos) : [];
+
+    const index = carrito.findIndex((item: any) => item.producto.id === this.producto.id);
+    if (index >= 0) {
+      carrito[index].cantidad += this.cantidad;
+    } else {
+      carrito.push({ producto: this.producto, cantidad: this.cantidad });
+    }
+
+    localStorage.setItem(key, JSON.stringify(carrito));
+    alert('Producto agregado al carrito');
   }
 
-  editarProducto(prod: Producto) {
-    this.productoForm.patchValue(prod);
-    this.productoEnEdicion = prod;
-    this.modoEdicion = true;
-  }
+  comprarAhora() {
+    const key = this.getCarritoKey();
 
-  eliminarProducto(id: number) {
-    this.productoService.eliminarProducto(id);
-    this.productos = this.productoService.obtenerProductos();
+    if (!key) {
+      alert('Debes iniciar sesión para comprar productos.');
+      return;
+    }
+
+    this.agregarAlCarrito();
+    alert('Compra directa en proceso (simulada)');
   }
 }

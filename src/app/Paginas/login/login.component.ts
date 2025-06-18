@@ -15,7 +15,11 @@ export class LoginComponent {
   loginForm: FormGroup;
   errorMessage = '';
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -25,16 +29,22 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value;
+      console.log('Intentando login con:', username, password);
+
       this.authService.login(username, password).subscribe({
         next: res => {
-          localStorage.setItem('user', JSON.stringify(res.user));
+          console.log('Respuesta del backend:', res);
           alert('Login exitoso');
           this.router.navigate(['']);
         },
         error: err => {
-          this.errorMessage = err.error?.message || 'Error en el login';
+          console.error('Error al iniciar sesión:', err);
+          // Si err.error.message viene del backend, lo mostramos, si no mostramos mensaje genérico
+          this.errorMessage = err.error?.message || err.message || 'Error en el login';
         }
       });
+    } else {
+      this.errorMessage = 'Por favor completá todos los campos.';
     }
   }
 }

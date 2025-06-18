@@ -5,20 +5,34 @@ import { Compra } from '../Modelos/compra.model';
   providedIn: 'root'
 })
 export class CompraService {
-  private key = 'historialCompras';
+
+  private obtenerUsername(): string | null {
+    const userData = localStorage.getItem('user');
+    const user = userData ? JSON.parse(userData) : null;
+    return user?.username || null;
+  }
 
   obtenerCompras(): Compra[] {
-    const data = localStorage.getItem(this.key);
+    const username = this.obtenerUsername();
+    if (!username) return [];
+    
+    const data = localStorage.getItem(`historialCompras_${username}`);
     return data ? JSON.parse(data) : [];
   }
 
   agregarCompra(compra: Compra): void {
+    const username = this.obtenerUsername();
+    if (!username) return;
+
     const historial = this.obtenerCompras();
     historial.push(compra);
-    localStorage.setItem(this.key, JSON.stringify(historial));
+    localStorage.setItem(`historialCompras_${username}`, JSON.stringify(historial));
   }
 
   limpiarHistorial(): void {
-    localStorage.removeItem(this.key);
+    const username = this.obtenerUsername();
+    if (!username) return;
+
+    localStorage.removeItem(`historialCompras_${username}`);
   }
 }

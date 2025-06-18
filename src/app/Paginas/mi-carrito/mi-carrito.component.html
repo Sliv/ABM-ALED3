@@ -1,0 +1,18 @@
+<div class="carrito-container">
+  <h2>Mi Carrito</h2>
+
+  <div *ngIf="carrito.length === 0">
+    No hay productos en el carrito.
+  </div>
+
+  <div *ngIf="carrito.length > 0">
+    <ul>
+      <li *ngFor="let item of carrito">
+        {{ item.producto.nombre }} - Cantidad: {{ item.cantidad }}
+        <button (click)="eliminarDelCarrito(item.producto.id)">Eliminar</button>
+      </li>
+    </ul>
+
+    <button (click)="generarFactura()">Generar Factura</button>
+  </div>
+</div>

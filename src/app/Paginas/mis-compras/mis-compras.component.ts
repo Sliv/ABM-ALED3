@@ -15,13 +15,12 @@ export class MisComprasComponent implements OnInit {
   constructor(private compraService: CompraService) {}
 
   ngOnInit(): void {
-    // Obtener compras desde el servicio
+
     const comprasData = this.compraService.obtenerCompras();
 
-    // Mapear para asegurarnos que 'fecha' sea objeto Date (para pipe date)
     this.compras = comprasData.map(c => ({
       ...c,
-      fecha: new Date(c.fecha)  // Convierte string o timestamp a Date
+      fecha: new Date(c.fecha) 
     }));
   }
 }
