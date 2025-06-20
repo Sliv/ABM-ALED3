@@ -154,5 +154,23 @@
       }
     ],
     "fecha": "2025-06-18T22:42:05.149Z"
+  },
+  {
+    "username": "Admin",
+    "productos": [
+      {
+        "producto": {
+          "nombre": "Remera",
+          "descripcion": "Remera Nike",
+          "precioARS": 20000,
+          "categoria": "Indumentaria",
+          "imagen": "a",
+          "id": 2,
+          "precio": 20000
+        },
+        "cantidad": 1
+      }
+    ],
+    "fecha": "2025-06-19T01:38:59.774Z"
   }
 ]

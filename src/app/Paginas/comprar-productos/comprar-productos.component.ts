@@ -27,7 +27,6 @@ export class ComprarProductosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ Nos suscribimos al observable
     this.productoService.obtenerProductos().subscribe((productos: Producto[]) => {
       this.productos = productos;
     });

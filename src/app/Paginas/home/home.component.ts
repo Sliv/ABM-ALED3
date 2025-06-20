@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-// import { CardsComponent } from "../../component/cards/cards.component"; Agregar después.
 import { FaqComponent } from "../../component/faqs/faqs.component";
 
 

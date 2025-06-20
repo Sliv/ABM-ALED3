@@ -15,7 +15,7 @@ export class ProductoService {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(productos => productos.map(p => ({
         ...p,
-        precio: p.precioARS // Asegúrate de que Producto tenga "precio"
+        precio: p.precioARS 
       })))
     );
   }
