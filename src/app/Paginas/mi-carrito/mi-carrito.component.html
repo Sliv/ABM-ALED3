@@ -1,18 +1,48 @@
 <div class="carrito-container">
-  <h2>Mi Carrito</h2>
+  <h2>🛒 Mi Carrito</h2>
 
-  <div *ngIf="carrito.length === 0">
+  <div *ngIf="carrito.length === 0" class="carrito-vacio">
     No hay productos en el carrito.
   </div>
 
-  <div *ngIf="carrito.length > 0">
-    <ul>
-      <li *ngFor="let item of carrito">
-        {{ item.producto.nombre }} - Cantidad: {{ item.cantidad }}
-        <button (click)="eliminarDelCarrito(item.producto.id)">Eliminar</button>
-      </li>
-    </ul>
+  <div *ngIf="carrito.length > 0" class="lista-productos">
+    <div *ngFor="let item of carrito" class="card-producto">
+      <input
+        type="checkbox"
+        class="checkbox-seleccionar"
+        [(ngModel)]="item.seleccionado"
+      />
 
-    <button (click)="generarFactura()">Generar Factura</button>
+      <img [src]="item.producto.imagen" alt="{{ item.producto.nombre }}" />
+
+      <div class="info-producto">
+        <p class="categoria">{{ item.producto.categoria }}</p>
+        <h3>{{ item.producto.nombre }}</h3>
+        <p class="descripcion">{{ item.producto.descripcion }}</p>
+        <p class="precio">Precio unitario: ${{ item.producto.precio }}</p>
+        <p class="cantidad">Cantidad: {{ item.cantidad }}</p>
+        <p class="subtotal">Subtotal: ${{ item.producto.precio * item.cantidad }}</p>
+      </div>
+
+      <button
+        class="btn-eliminar"
+        (click)="eliminarDelCarrito(item.producto.id)"
+        title="Eliminar este producto"
+      >
+        🗑️
+      </button>
+    </div>
+
+    <div class="resumen-carrito">
+      <p><strong>Total:</strong> ${{ calcularTotal() }}</p>
+
+      <button class="btn-eliminar-todos" (click)="eliminarSeleccionados()">
+        🗑️ Eliminar seleccionados
+      </button>
+
+      <button class="btn-factura" (click)="generarFactura()">
+        🧾 Generar Factura
+      </button>
+    </div>
   </div>
 </div>

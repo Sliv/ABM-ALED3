@@ -1,0 +1,136 @@
+.carrito-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h2 {
+  text-align: center;
+  font-size: 30px;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.carrito-vacio {
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+.lista-productos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-producto {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 12px 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.card-producto:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-producto img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.info-producto {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+}
+
+.info-producto > * {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  min-width: 100px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categoria {
+  font-size: 13px;
+  color: #999;
+  min-width: 120px;
+}
+
+h3 {
+  font-size: 16px;
+  color: #333;
+  min-width: 180px;
+}
+
+.descripcion {
+  font-size: 13px;
+  color: #666;
+  min-width: 220px;
+  white-space: normal;
+  max-width: 300px;
+}
+
+.precio, .cantidad, .subtotal {
+  min-width: 120px;
+  font-weight: 600;
+  color: #222;
+}
+
+.btn-eliminar, .btn-factura, .btn-eliminar-todos {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-eliminar:hover, .btn-eliminar-todos:hover {
+  background-color: #e04343;
+}
+
+.btn-factura {
+  background-color: #007bff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-factura:hover {
+  background-color: #005fcc;
+}
+
+.resumen-carrito {
+  margin-top: 30px;
+  font-size: 18px;
+  text-align: right;
+}
+
+.checkbox-seleccionar {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}

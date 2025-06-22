@@ -57,7 +57,7 @@
 }
 
 .formulario button {
-  background-color: #1976d2;
+  background-color: #295a8b;
   color: white;
   padding: 0.6rem 1.2rem;
   border: none;
@@ -67,7 +67,7 @@
 }
 
 .formulario button:hover {
-  background-color: #125ea2;
+  background-color: #0a85f1;
 }
 
 .filtro input {
@@ -76,6 +76,23 @@
   margin-bottom: 1.5rem;
   border: 1px solid #ccc;
   border-radius: 8px;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 10px 16px;
+  background-color: #376439;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+  user-select: none;
+}
+
+.custom-file-upload:hover {
+  background-color: #4CAF50;
 }
 
 .tabla {

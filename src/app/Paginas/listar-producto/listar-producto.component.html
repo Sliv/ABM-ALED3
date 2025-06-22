@@ -1,11 +1,6 @@
 <div class="producto-dashboard">
   <div class="dashboard-header">
     <h2>Gestionar <strong>Productos</strong></h2>
-    <div class="dashboard-actions">
-      <button class="btn agregar" type="button">
-        ➕ Agregar Nuevo Producto
-      </button>
-    </div>
   </div>
 
   <div class="formulario">
@@ -17,8 +12,11 @@
       </div>
       <div class="form-row">
         <input formControlName="categoria" placeholder="Categoría" />
-        <input formControlName="imagen" placeholder="URL Imagen" />
-        <button type="submit">{{ modoEdicion ? 'Actualizar' : 'Agregar' }}</button>
+        <label class="custom-file-upload">
+          📁 Subir Imagen
+          <input type="file" (change)="cargarImagen($event)" hidden />
+        </label>
+        <button type="submit"class= "btn agregar">{{ modoEdicion ? 'Actualizar' : ' ➕ Agregar nuevo Producto' }}</button>
       </div>
     </form>
   </div>

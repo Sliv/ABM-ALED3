@@ -17,7 +17,7 @@ export class MisComprasComponent implements OnInit {
 
   ngOnInit(): void {
     this.compraService.obtenerCompras().subscribe(comprasData => {
-      this.compras = comprasData;  // Sin conversión de fecha
+      this.compras = comprasData;  
     });
   }
 }

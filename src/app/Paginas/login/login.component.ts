@@ -39,7 +39,6 @@ export class LoginComponent {
         },
         error: err => {
           console.error('Error al iniciar sesión:', err);
-          // Si err.error.message viene del backend, lo mostramos, si no mostramos mensaje genérico
           this.errorMessage = err.error?.message || err.message || 'Error en el login';
         }
       });

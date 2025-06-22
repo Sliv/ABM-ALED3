@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 interface Faq {
   pregunta: string;
   respuesta: string;
-  estaAbierto?: boolean; // opcional al recibirlo
+  estaAbierto?: boolean; 
 }
 
 @Component({
