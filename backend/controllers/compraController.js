@@ -1,39 +1,39 @@
 const fs = require('fs');
 const path = require('path');
 
-const comprasFilePath = path.join(__dirname, '../data/Compras.json');
+const rutaCompras = path.join(__dirname, '../data/Compras.json');
 
-const loadCompras = () => {
+const cargarCompras = () => {
   try {
-    const data = fs.readFileSync(comprasFilePath, 'utf8');
-    return JSON.parse(data);
+    const datos = fs.readFileSync(rutaCompras, 'utf8');
+    return JSON.parse(datos);
   } catch {
     return [];
   }
 };
 
-const saveCompras = (compras) => {
-  fs.writeFileSync(comprasFilePath, JSON.stringify(compras, null, 2));
+const guardarCompras = (compras) => {
+  fs.writeFileSync(rutaCompras, JSON.stringify(compras, null, 2));
 };
 
-exports.getHistorialCompras = (req, res) => {
-  const username = req.params.username;
-  const compras = loadCompras();
-  const comprasUsuario = compras.filter(c => c.username === username);
-  res.json(comprasUsuario);
+exports.obtenerHistorialCompras = (req, res) => {
+  const nombreUsuario = req.params.username;
+  const compras = cargarCompras();
+  const comprasDelUsuario = compras.filter(c => c.username === nombreUsuario);
+  res.json(comprasDelUsuario);
 };
 
 exports.agregarCompra = (req, res) => {
   const nuevaCompra = req.body;
-  const username = req.params.username;
+  const nombreUsuario = req.params.username;
 
-  nuevaCompra.username = username;
+  nuevaCompra.username = nombreUsuario;
   if (!nuevaCompra.fecha) {
     nuevaCompra.fecha = new Date().toISOString();
   }
 
-  const compras = loadCompras();
+  const compras = cargarCompras();
   compras.push(nuevaCompra);
-  saveCompras(compras);
-  res.status(201).json({ message: 'Compra guardada' });
+  guardarCompras(compras);
+  res.status(201).json({ mensaje: 'Compra guardada exitosamente' });
 };

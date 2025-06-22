@@ -22,7 +22,7 @@ export class MiCarritoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const usuario = localStorage.getItem('user');
+    const usuario = localStorage.getItem('usuario'); 
     const username = usuario ? JSON.parse(usuario).username : null;
 
     if (username) {
@@ -39,7 +39,7 @@ export class MiCarritoComponent implements OnInit {
   }
 
   eliminarDelCarrito(id: number) {
-    const usuario = localStorage.getItem('user');
+    const usuario = localStorage.getItem('usuario'); 
     const username = usuario ? JSON.parse(usuario).username : null;
 
     if (!username) return;
@@ -49,7 +49,7 @@ export class MiCarritoComponent implements OnInit {
   }
 
   eliminarSeleccionados() {
-    const usuario = localStorage.getItem('user');
+    const usuario = localStorage.getItem('usuario'); 
     const username = usuario ? JSON.parse(usuario).username : null;
 
     if (!username) return;
@@ -63,7 +63,7 @@ export class MiCarritoComponent implements OnInit {
   }
 
   generarFactura() {
-    const usuario = localStorage.getItem('user');
+    const usuario = localStorage.getItem('usuario');
     const username = usuario ? JSON.parse(usuario).username : null;
 
     if (!username) {

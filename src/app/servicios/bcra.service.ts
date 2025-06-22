@@ -36,33 +36,33 @@ export class BcraService {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-obtenerTipoCambioUSD(): Observable<number> {
-  const hoy = new Date();
-  const fechaHasta = this.formatDate(hoy);
+  obtenerTipoCambioUSD(): Observable<number> {
+    const hoy = new Date();
+    const fechaHasta = this.formatDate(hoy);
 
-  const desdeDate = new Date(hoy);
-  desdeDate.setDate(hoy.getDate() - 30);
-  const fechaDesde = this.formatDate(desdeDate);
+    const desdeDate = new Date(hoy);
+    desdeDate.setDate(hoy.getDate() - 30);
+    const fechaDesde = this.formatDate(desdeDate);
 
-  const url = `${this.apiUrl}?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+    const url = `${this.apiUrl}?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
 
-  return this.http.get<ApiResponse>(url).pipe(
-    map(response => {
-      const resultados = response.results;
-      if (!resultados || resultados.length === 0) {
-        return 0;
-      }
-      
-      const resultadoMasReciente = resultados[0];
+    return this.http.get<ApiResponse>(url).pipe(
+      map(response => {
+        const resultados = response.results;
+        if (!resultados || resultados.length === 0) {
+          return 0;
+        }
+        
+        const resultadoMasReciente = resultados[0];
 
-      if (!resultadoMasReciente.detalle || resultadoMasReciente.detalle.length === 0) {
-        return 0;
-      }
+        if (!resultadoMasReciente.detalle || resultadoMasReciente.detalle.length === 0) {
+          return 0;
+        }
 
-      const detalleUSD = resultadoMasReciente.detalle.find(d => d.codigoMoneda === 'USD');
-      return detalleUSD ? detalleUSD.tipoCotizacion : 0;
-    }),
-    catchError(() => of(0))
-  );
-}
+        const detalleUSD = resultadoMasReciente.detalle.find(d => d.codigoMoneda === 'USD');
+        return detalleUSD ? detalleUSD.tipoCotizacion : 0;
+      }),
+      catchError(() => of(0))
+    );
+  }
 }

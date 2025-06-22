@@ -1,53 +1,56 @@
 const fs = require('fs');
 const path = require('path');
 
-const usersFilePath = path.join(__dirname, '../data/Usuarios.json');
+const rutaUsuarios = path.join(__dirname, '../data/Usuarios.json');
 
-const loadUsersFromFile = () => {
+const cargarUsuariosDesdeArchivo = () => {
   try {
-    const data = fs.readFileSync(usersFilePath, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error leyendo Usuarios.json:', err);
+    const datos = fs.readFileSync(rutaUsuarios, 'utf8');
+    return JSON.parse(datos);
+  } catch (error) {
+    console.error('Error al leer Usuarios.json:', error);
     return [];
   }
 };
 
-const saveUsersToFile = (users) => {
+const guardarUsuariosEnArchivo = (usuarios) => {
   try {
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-    console.log('Usuarios guardados en archivo.');
-  } catch (err) {
-    console.error('Error guardando Usuarios.json:', err);
+    fs.writeFileSync(rutaUsuarios, JSON.stringify(usuarios, null, 2));
+    console.log('Usuarios guardados en el archivo.');
+  } catch (error) {
+    console.error('Error al guardar Usuarios.json:', error);
   }
 };
 
-exports.registerUser = (req, res) => {
+exports.registrarUsuario = (req, res) => {
   const { username, password } = req.body;
-  
-  const users = loadUsersFromFile();
 
-  if (users.find(u => u.username === username)) {
-    return res.status(400).json({ message: 'El usuario ya existe' });
+  const usuarios = cargarUsuariosDesdeArchivo();
+
+  if (usuarios.find(u => u.username === username)) {
+    return res.status(400).json({ mensaje: 'El usuario ya existe' });
   }
 
-  const newUser = { username, password, rol: 'usuario' };
-  users.push(newUser);
-  saveUsersToFile(users);
+  const nuevoUsuario = { username, password, rol: 'usuario' };
+  usuarios.push(nuevoUsuario);
+  guardarUsuariosEnArchivo(usuarios);
 
-  res.status(201).json({ message: 'Usuario registrado con éxito', user: newUser });
+  res.status(201).json({ mensaje: 'Usuario registrado con éxito', usuario: nuevoUsuario });
 };
 
-exports.loginUser = (req, res) => {
+exports.iniciarSesion = (req, res) => {
   const { username, password } = req.body;
 
-  const users = loadUsersFromFile();
+  const usuarios = cargarUsuariosDesdeArchivo();
 
-  const user = users.find(u => u.username === username && u.password === password);
+  const usuario = usuarios.find(u => u.username === username && u.password === password);
 
-  if (!user) {
-    return res.status(401).json({ message: 'Credenciales inválidas' });
+  if (!usuario) {
+    return res.status(401).json({ mensaje: 'Credenciales inválidas' });
   }
 
-  res.status(200).json({ message: 'Login exitoso', user: { username: user.username, rol: user.rol } });
+  res.status(200).json({
+    mensaje: 'Inicio de sesión exitoso',
+    usuario: { username: usuario.username, rol: usuario.rol }
+  });
 };

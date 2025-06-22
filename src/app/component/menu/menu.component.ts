@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'; 
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -32,14 +32,14 @@ export class MenuComponent implements OnInit {
   }
 
   checkLoginStatus(): void {
-    const userJson = localStorage.getItem('user');
+    const userJson = localStorage.getItem('usuario');  
     const user = userJson ? JSON.parse(userJson) : null;
     this.isLoggedIn = !!user;
     this.rol = user?.rol || null;
   }
 
   logout(): void {
-    localStorage.removeItem('user');
+    localStorage.removeItem('usuario'); 
     this.isLoggedIn = false;
     this.rol = null;
     this.router.navigate(['login']);

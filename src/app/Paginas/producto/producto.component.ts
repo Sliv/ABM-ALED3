@@ -15,7 +15,7 @@ import { Compra } from '../../Modelos/compra.model';
   styleUrls: ['./producto.component.css']
 })
 export class ProductoComponent implements OnInit {
-  producto!: Producto;
+  producto?: Producto;
   cantidad: number = 1;
 
   constructor(
@@ -38,7 +38,9 @@ export class ProductoComponent implements OnInit {
   }
 
   agregarAlCarrito(): void {
-    const usuario = localStorage.getItem('user');
+    if (!this.producto) return;
+
+    const usuario = localStorage.getItem('usuario');
     const username = usuario ? JSON.parse(usuario).username : null;
 
     if (!username) {
@@ -48,9 +50,10 @@ export class ProductoComponent implements OnInit {
     }
 
     const carritoKey = 'carrito_' + username;
-    const carritoActual = JSON.parse(localStorage.getItem(carritoKey) || '[]');
+    const data = localStorage.getItem(carritoKey);
+    const carritoActual = data && data !== 'undefined' ? JSON.parse(data) : [];
 
-    const existente = carritoActual.find((p: any) => p.producto?.id === this.producto.id);
+    const existente = carritoActual.find((p: any) => p.producto?.id === this.producto!.id);
 
     if (existente) {
       existente.cantidad += this.cantidad;
@@ -63,7 +66,9 @@ export class ProductoComponent implements OnInit {
   }
 
   comprarAhora(): void {
-    const usuario = localStorage.getItem('user');
+    if (!this.producto) return;
+
+    const usuario = localStorage.getItem('usuario');
     const username = usuario ? JSON.parse(usuario).username : null;
 
     if (!username) {

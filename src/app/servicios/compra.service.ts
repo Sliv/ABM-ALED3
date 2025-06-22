@@ -13,7 +13,7 @@ export class CompraService {
   constructor(private http: HttpClient) {}
 
   private obtenerUsername(): string | null {
-    const userData = localStorage.getItem('user');
+    const userData = localStorage.getItem('usuario');
     const user = userData ? JSON.parse(userData) : null;
     return user?.username || null;
   }

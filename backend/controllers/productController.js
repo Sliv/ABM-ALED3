@@ -1,55 +1,66 @@
 const fs = require('fs');
 const path = require('path');
 
-const productosPath = path.join(__dirname, '../data/Productos.json');
+const rutaProductos = path.join(__dirname, '../data/Productos.json');
 
-const loadProductos = () => {
+const cargarProductos = () => {
   try {
-    const data = fs.readFileSync(productosPath, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error al leer Productos.json:', err);
+    const datos = fs.readFileSync(rutaProductos, 'utf8');
+    return JSON.parse(datos);
+  } catch (error) {
+    console.error('Error al leer Productos.json:', error);
     return [];
   }
 };
 
-const saveProductos = (productos) => {
+const guardarProductos = (productos) => {
   try {
-    fs.writeFileSync(productosPath, JSON.stringify(productos, null, 2));
-  } catch (err) {
-    console.error('Error al guardar Productos.json:', err);
+    fs.writeFileSync(rutaProductos, JSON.stringify(productos, null, 2));
+  } catch (error) {
+    console.error('Error al guardar Productos.json:', error);
   }
 };
 
-exports.getProductos = (req, res) => {
-  const productos = loadProductos();
+exports.obtenerProductos = (req, res) => {
+  const productos = cargarProductos();
   res.json(productos);
 };
 
-exports.addProducto = (req, res) => {
-  const productos = loadProductos();
+exports.agregarProducto = (req, res) => {
+  const productos = cargarProductos();
   const nuevoProducto = req.body;
-  nuevoProducto.id = productos.length ? Math.max(...productos.map(p => p.id)) + 1 : 1;
+
+  nuevoProducto.id = productos.length
+    ? Math.max(...productos.map(p => p.id)) + 1
+    : 1;
+
   productos.push(nuevoProducto);
-  saveProductos(productos);
+  guardarProductos(productos);
+
   res.status(201).json(nuevoProducto);
 };
 
-exports.updateProducto = (req, res) => {
+exports.actualizarProducto = (req, res) => {
   const id = parseInt(req.params.id);
-  let productos = loadProductos();
-  const index = productos.findIndex(p => p.id === id);
-  if (index === -1) return res.status(404).json({ message: 'Producto no encontrado' });
+  let productos = cargarProductos();
 
-  productos[index] = { id, ...req.body };
-  saveProductos(productos);
-  res.json(productos[index]);
+  const indice = productos.findIndex(p => p.id === id);
+  if (indice === -1) {
+    return res.status(404).json({ mensaje: 'Producto no encontrado' });
+  }
+
+  productos[indice] = { id, ...req.body };
+  guardarProductos(productos);
+
+  res.json(productos[indice]);
 };
 
-exports.deleteProducto = (req, res) => {
+exports.eliminarProducto = (req, res) => {
   const id = parseInt(req.params.id);
-  let productos = loadProductos();
+  let productos = cargarProductos();
+
   productos = productos.filter(p => p.id !== id);
-  saveProductos(productos);
-  res.json({ message: 'Producto eliminado' });
+  guardarProductos(productos);
+
+  res.json({ mensaje: 'Producto eliminado' });
 };

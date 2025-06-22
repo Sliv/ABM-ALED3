@@ -91,12 +91,12 @@ export class ListarProductoComponent implements OnInit {
     });
   }
 
-cargarImagen(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    const imageUrl = URL.createObjectURL(file);
-    this.productoForm.patchValue({ imagen: imageUrl });
+  cargarImagen(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      this.productoForm.patchValue({ imagen: imageUrl });
+    }
   }
-}
 }

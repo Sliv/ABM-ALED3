@@ -25,17 +25,17 @@ export class AuthService {
   login(username: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { username, password }).pipe(
       tap((res: any) => {
-        localStorage.setItem('user', JSON.stringify(res.user));
+        localStorage.setItem('usuario', JSON.stringify(res.usuario));
       }),
       catchError(err => throwError(() => new Error(err.error?.message || 'Credenciales inválidas')))
     );
   }
 
   logout(): void {
-    localStorage.removeItem('user');
+    localStorage.removeItem('usuario');
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('user');
+    return !!localStorage.getItem('usuario');
   }
 }
