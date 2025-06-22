@@ -1,19 +1,75 @@
 .historial-container {
-  max-width: 600px;
-  margin: auto;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.historial-container h2 {
+  font-size: 26px;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+.mensaje-vacio {
+  text-align: center;
+  font-size: 16px;
+  color: #999;
+  padding: 1.5rem;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+}
+
+.compra-card {
+  background-color: #f9f9f9;
+  border-left: 5px solid #3498db;
   padding: 1rem;
-  background: #f8f9fa;
+  margin-bottom: 1rem;
   border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
-ul {
+.compra-header {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.compra-header .fecha {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.productos-lista {
   list-style: none;
-  padding: 0;
+  padding-left: 0;
+  margin: 0;
 }
 
-li {
-  background: #fff;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-left: 5px solid #007bff;
+.productos-lista li {
+  padding: 0.4rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed #ddd;
+}
+
+.producto-nombre {
+  font-weight: 600;
+  color: #34495e;
+}
+
+.producto-detalle {
+  font-size: 14px;
+  color: #666;
 }

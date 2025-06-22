@@ -1,31 +1,119 @@
 .producto-detalle {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 2rem;
   display: flex;
-  padding: 20px;
+  flex-wrap: wrap;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  gap: 2rem;
 }
 
 .producto-img {
-  width: 300px;
-  margin-right: 40px;
+  flex: 1 1 300px;
+  max-width: 400px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  object-fit: cover;
 }
 
 .producto-info {
-  max-width: 500px;
+  flex: 1 1 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.producto-info h1 {
+  font-size: 32px;
+  color: #2c3e50;
+  margin-bottom: 1rem;
 }
 
 .descripcion {
-  font-size: 18px;
-  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 1rem;
 }
 
 .precio {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
-  margin: 10px 0;
+  color: #27ae60;
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: #333;
+}
+
+input[type="number"] {
+  width: 80px;
+  padding: 0.4rem 0.6rem;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.acciones {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .acciones button {
-  margin: 10px 10px 0 0;
-  padding: 10px 20px;
+  padding: 0.75rem 1.5rem;
   font-size: 16px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: bold;
+}
+
+.btn-carrito {
+  background-color: #f39c12;
+  color: white;
+}
+
+.btn-carrito:hover {
+  background-color: #d68910;
+}
+
+.btn-comprar {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn-comprar:hover {
+  background-color: #1e8449;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .producto-detalle {
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .producto-img {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .producto-info {
+    width: 100%;
+  }
+
+  .acciones {
+    justify-content: center;
+  }
 }

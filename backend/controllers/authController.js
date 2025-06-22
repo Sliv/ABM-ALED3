@@ -3,7 +3,6 @@ const path = require('path');
 
 const usersFilePath = path.join(__dirname, '../data/Usuarios.json');
 
-// Función para cargar usuarios desde archivo JSON
 const loadUsersFromFile = () => {
   try {
     const data = fs.readFileSync(usersFilePath, 'utf8');
@@ -14,7 +13,6 @@ const loadUsersFromFile = () => {
   }
 };
 
-// Función para guardar usuarios en archivo JSON
 const saveUsersToFile = (users) => {
   try {
     fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));

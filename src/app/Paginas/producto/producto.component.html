@@ -1,5 +1,6 @@
 <div class="producto-detalle">
   <img [src]="producto.imagen" alt="{{ producto.nombre }}" class="producto-img" />
+  
   <div class="producto-info">
     <h1>{{ producto.nombre }}</h1>
     <p class="descripcion">{{ producto.descripcion }}</p>
@@ -9,8 +10,8 @@
     <input type="number" [(ngModel)]="cantidad" min="1" id="cantidad" />
 
     <div class="acciones">
-      <button (click)="agregarAlCarrito()">Agregar al carrito</button>
-      <button (click)="comprarAhora()">Comprar ahora</button>
+      <button class="btn-carrito" (click)="agregarAlCarrito()">Agregar al carrito</button>
+      <button class="btn-comprar" (click)="comprarAhora()">Comprar ahora</button>
     </div>
   </div>
 </div>

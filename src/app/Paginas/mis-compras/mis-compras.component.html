@@ -1,19 +1,23 @@
 <div class="historial-container">
-  <h2>Mis Compras</h2>
+  <h2><span class="icon">🛒</span> Mis Compras</h2>
 
-  <div *ngIf="compras.length === 0">No hay compras registradas.</div>
+  <div *ngIf="compras.length === 0" class="mensaje-vacio">
+    No hay compras registradas.
+  </div>
 
-  <ul *ngIf="compras.length > 0">
-    <li *ngFor="let compra of compras">
-      <small>Fecha: {{ compra.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</small>
-      <ul>
+  <div *ngIf="compras.length > 0">
+    <div class="compra-card" *ngFor="let compra of compras">
+      <div class="compra-header">
+        <span class="fecha">🗓️ {{ compra.fecha | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+      </div>
+      <ul class="productos-lista">
         <li *ngFor="let item of compra.productos">
-          <strong>{{ item.producto.nombre }}</strong> - 
-          ${{ item.producto.precio * item.cantidad | number: '1.2-2' }} 
-          (x{{ item.cantidad }})
+          <span class="producto-nombre">📦 {{ item.producto.nombre }}</span>
+          <span class="producto-detalle">
+            (x{{ item.cantidad }}) - ${{ item.producto.precio * item.cantidad | number: '1.2-2' }}
+          </span>
         </li>
       </ul>
-      <hr />
-    </li>
-  </ul>
+    </div>
+  </div>
 </div>

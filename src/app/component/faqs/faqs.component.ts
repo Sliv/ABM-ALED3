@@ -1,5 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+interface Faq {
+  pregunta: string;
+  respuesta: string;
+  estaAbierto?: boolean; // opcional al recibirlo
+}
 
 @Component({
   selector: 'app-faqs',
@@ -8,13 +14,10 @@ import { CommonModule } from '@angular/common';
   templateUrl: './faqs.component.html',
   styleUrls: ['./faqs.component.css']
 })
-export class FaqComponent { 
-  faqs = [
-    { pregunta: '¿Cómo puedo crear una cuenta?', respuesta: '1', estaAbierto: false },
-    { pregunta: '¿Cómo puedo editar una cuenta?', respuesta: '2', estaAbierto: false }
-  ];
+export class FaqComponent {
+  @Input() faqs: Faq[] = [];
 
-  toggleRespuesta(faq: any): void {
+  toggleRespuesta(faq: Faq): void {
     faq.estaAbierto = !faq.estaAbierto;
   }
 

@@ -1,18 +1,19 @@
 [
   {
+    "id": 1,
     "nombre": "Zapatillas",
     "descripcion": "Zapatillas Nike",
-    "precioARS": 55000,
+    "precioARS": 56000,
     "categoria": "Indumentaria",
-    "imagen": "asd",
-    "id": 1
+    "imagen": "../../../assets/imgs/Zapatilla.jpg",
+    "precio": 55000
   },
   {
     "nombre": "Remera",
     "descripcion": "Remera Nike",
     "precioARS": 20000,
     "categoria": "Indumentaria",
-    "imagen": "a",
+    "imagen": "../../../assets/imgs/Remera.jpg",
     "id": 2
   },
   {
@@ -20,7 +21,7 @@
     "descripcion": "Consola de videojuegos",
     "precioARS": 1000000,
     "categoria": "Tecnología",
-    "imagen": "1",
+    "imagen": "../../../assets/imgs/PS5.jpg",
     "id": 3
   },
   {
@@ -28,7 +29,215 @@
     "descripcion": "Sillon de cuero",
     "precioARS": 500000,
     "categoria": "Muebles",
-    "imagen": "a",
+    "imagen": "../../../assets/imgs/Sillon.jfif",
     "id": 4
+  },
+  {
+    "id": 5,
+    "nombre": "Notebook",
+    "descripcion": "Notebook HP 16GB RAM",
+    "precioARS": 850000,
+    "categoria": "Tecnología",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 6,
+    "nombre": "Camiseta",
+    "descripcion": "Camiseta Adidas Original",
+    "precioARS": 25000,
+    "categoria": "Indumentaria",
+    "imagen": "../../../assets/imgs/Remera.jpg"
+  },
+  {
+    "id": 7,
+    "nombre": "Heladera",
+    "descripcion": "Heladera con freezer Samsung",
+    "precioARS": 730000,
+    "categoria": "Electrodomésticos",
+    "imagen": "../../../assets/imgs/Heladera.jpg"
+  },
+  {
+    "id": 8,
+    "nombre": "Auriculares",
+    "descripcion": "Auriculares inalámbricos Sony",
+    "precioARS": 95000,
+    "categoria": "Tecnología",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 9,
+    "nombre": "Mesa de comedor",
+    "descripcion": "Mesa de madera para 6 personas",
+    "precioARS": 320000,
+    "categoria": "Muebles",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 10,
+    "nombre": "Lavarropas",
+    "descripcion": "Lavarropas automático LG",
+    "precioARS": 600000,
+    "categoria": "Electrodomésticos",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 11,
+    "nombre": "Bicicleta",
+    "descripcion": "Bicicleta de montaña rodado 29",
+    "precioARS": 180000,
+    "categoria": "Deportes",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 12,
+    "nombre": "Silla Gamer",
+    "descripcion": "Silla ergonómica para juegos",
+    "precioARS": 145000,
+    "categoria": "Muebles",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 13,
+    "nombre": "Smartwatch",
+    "descripcion": "Reloj inteligente Xiaomi",
+    "precioARS": 85000,
+    "categoria": "Tecnología",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 14,
+    "nombre": "Horno eléctrico",
+    "descripcion": "Horno eléctrico 35L",
+    "precioARS": 120000,
+    "categoria": "Electrodomésticos",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 15,
+    "nombre": "Zapatillas deportivas",
+    "descripcion": "Zapatillas Puma Running",
+    "precioARS": 58000,
+    "categoria": "Indumentaria",
+    "imagen": "../../../assets/imgs/Zapatilla.jpg"
+  },
+  {
+    "id": 16,
+    "nombre": "Tablet",
+    "descripcion": "Tablet Samsung Galaxy 10\"",
+    "precioARS": 300000,
+    "categoria": "Tecnología",
+    "imagen": "../../../assets/imgs/Tablet.jpg"
+  },
+  {
+    "id": 17,
+    "nombre": "Cafetera",
+    "descripcion": "Cafetera Nespresso automática",
+    "precioARS": 95000,
+    "categoria": "Electrodomésticos",
+    "imagen": "../../../assets/imgs"
+  },
+  {
+    "id": 18,
+    "nombre": "Campera",
+    "descripcion": "Campera impermeable The North Face",
+    "precioARS": 150000,
+    "categoria": "Indumentaria",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 19,
+    "nombre": "Monitor",
+    "descripcion": "Monitor LED 24'' Samsung",
+    "precioARS": 190000,
+    "categoria": "Tecnología",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 20,
+    "nombre": "Escritorio",
+    "descripcion": "Escritorio de madera con cajonera",
+    "precioARS": 210000,
+    "categoria": "Muebles",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 21,
+    "nombre": "Estufa a gas",
+    "descripcion": "Estufa a gas tiro balanceado",
+    "precioARS": 180000,
+    "categoria": "Electrodomésticos",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 22,
+    "nombre": "Colchón",
+    "descripcion": "Colchón de 2 plazas con pillow top",
+    "precioARS": 350000,
+    "categoria": "Muebles",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 23,
+    "nombre": "Zapatillas urbanas",
+    "descripcion": "Zapatillas Vans clásicas",
+    "precioARS": 62000,
+    "categoria": "Indumentaria",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 24,
+    "nombre": "Impresora",
+    "descripcion": "Impresora multifunción Epson",
+    "precioARS": 130000,
+    "categoria": "Tecnología",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 25,
+    "nombre": "Batería de cocina",
+    "descripcion": "Juego de ollas de acero inoxidable",
+    "precioARS": 110000,
+    "categoria": "Electrodomésticos",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 26,
+    "nombre": "Lámpara de pie",
+    "descripcion": "Lámpara de pie moderna de metal",
+    "precioARS": 78000,
+    "categoria": "Muebles",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 27,
+    "nombre": "Router WiFi",
+    "descripcion": "Router WiFi de doble banda TP-Link",
+    "precioARS": 65000,
+    "categoria": "Tecnología",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 28,
+    "nombre": "Pantalón deportivo",
+    "descripcion": "Pantalón Adidas jogging unisex",
+    "precioARS": 32000,
+    "categoria": "Indumentaria",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 29,
+    "nombre": "Batidora",
+    "descripcion": "Batidora de mano Philips 600W",
+    "precioARS": 42000,
+    "categoria": "Electrodomésticos",
+    "imagen": "../../../assets/imgs/"
+  },
+  {
+    "id": 30,
+    "nombre": "Sommier",
+    "descripcion": "Sommier 2 plazas con base",
+    "precioARS": 490000,
+    "categoria": "Muebles",
+    "imagen": "../../../assets/imgs/"
   }
 ]
