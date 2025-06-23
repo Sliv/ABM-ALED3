@@ -25,8 +25,13 @@ ng serve --open
 ## Funcionalidades
 
 Registro e inicio de sesión con validación y persistencia.
+
 ABM de productos (Agregar, Editar, Eliminar)
+
 Carrito de compras.
+
 Generación de "factura" con conversión a USD.
+
 Historial de compras.
+
 Menú dinámico según el rol del usuario (Usuario/Admin)
