@@ -8,10 +8,10 @@
       <h3>Registro</h3>
       <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
         <label for="username">Usuario<span class="required">*</span></label>
-        <input type="text" id="username" formControlName="username" placeholder="Username or Email" />
+        <input type="text" id="username" formControlName="username" placeholder="Escriba su Usuario" />
 
         <label for="password">Contraseña<span class="required">*</span></label>
-        <input type="password" id="password" formControlName="password" placeholder="Password" />
+        <input type="password" id="password" formControlName="password" placeholder="Escriba su Contraseña" />
 
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
         <button type="submit" [disabled]="signUpForm.invalid" class="signin-btn">Registrarse</button>

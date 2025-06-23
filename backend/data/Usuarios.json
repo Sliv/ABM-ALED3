@@ -513,5 +513,10 @@
     "username": "Otro",
     "password": "3333",
     "rol": "usuario"
+  },
+  {
+    "username": "NuevaCuenta",
+    "password": "1234",
+    "rol": "usuario"
   }
 ]

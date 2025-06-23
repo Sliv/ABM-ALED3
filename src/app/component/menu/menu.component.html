@@ -32,13 +32,12 @@
 <nav class="nav-side" [class.open]="menuVisible">
   <ul>
     <li><a routerLink="">Home</a></li>
-    <li><a routerLink="listaUsuario">Categorías</a></li>
     <li><a routerLink="comprar-productos">Comprar</a></li>
 
     <ng-container *ngIf="isLoggedIn">
       <li><a routerLink="mis-compras">Mis compras</a></li>
       <li *ngIf="rol === 'administrador'">
-        <a routerLink="producto">Crear producto</a>
+        <a routerLink="listar-producto">Admin Productos</a>
       </li>
       <li><a (click)="logout()" style="cursor: pointer;">Cerrar sesión</a></li>
     </ng-container>
