@@ -8,7 +8,7 @@ Este proyecto es una tienda virtual desarrollada con Angular para la clase de Al
 
 ### 1. Clonar el repositorio
 
-git clone https://github.com/tu-usuario/ABM-ALED3.git
+git clone https://github.com/Sliv/ABM-ALED3.git
 cd ABM-ALED3
 
 ---
