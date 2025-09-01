@@ -96,7 +96,6 @@ input[type="number"] {
   background-color: #1e8449;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .producto-detalle {
     flex-direction: column;

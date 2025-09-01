@@ -13,37 +13,37 @@ import { CommonModule } from '@angular/common';
   imports: [ReactiveFormsModule, CommonModule]
 })
 export class SignUpComponent {
-  signUpForm: FormGroup;
-  errorMessage = '';
+  formularioRegistro: FormGroup;
+  mensajeError: string = '';
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService
   ) {
-    this.signUpForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(4)]],
-      rol: ['usuario'] 
+    this.formularioRegistro = this.fb.group({
+      usuario: ['', [Validators.required, Validators.minLength(3)]],
+      contraseña: ['', [Validators.required, Validators.minLength(4)]],
+      rol: ['usuario']
     });
   }
 
-  onSubmit(): void {
-    if (this.signUpForm.valid) {
-      const { username, password, rol } = this.signUpForm.value;
+  registrar(): void {
+    if (this.formularioRegistro.valid) {
+      const { usuario, contraseña, rol } = this.formularioRegistro.value;
 
-      this.authService.register(username, password, rol).subscribe({
+      this.authService.register(usuario, contraseña, rol).subscribe({
         next: () => {
           alert('Usuario registrado exitosamente');
           this.router.navigate(['login']);
         },
         error: err => {
           console.error('Error en el registro:', err);
-          this.errorMessage = err.message || 'Error en el registro';
+          this.mensajeError = err.message || 'Error en el registro';
         }
       });
     } else {
-      this.errorMessage = 'Por favor completá todos los campos correctamente.';
+      this.mensajeError = 'Por favor completá todos los campos correctamente.';
     }
   }
 }

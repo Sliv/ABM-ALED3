@@ -5,44 +5,49 @@
 
   <nav class="nav-inline">
     <ul>
-      <li><a routerLink="">Home</a></li>
+      <li><a routerLink="">Inicio</a></li>
       <li><a routerLink="comprar-productos">Comprar</a></li>
 
-      <ng-container *ngIf="isLoggedIn">
+      <ng-container *ngIf="estaLogueado">
         <li><a routerLink="mis-compras">Mis compras</a></li>
         <li><a routerLink="mi-carrito">Carrito</a></li>
         <li *ngIf="rol === 'administrador'">
-          <a routerLink="listar-producto">Admin Productos</a>
+          <a routerLink="listar-producto">Administrar productos</a>
         </li>
-        <li><a (click)="logout()" style="cursor: pointer;">Cerrar sesión</a></li>
+        <li *ngIf="rol === 'administrador'">
+          <a routerLink="listar-producto">Reporteria ventas</a>
+        </li>
+        <li *ngIf="rol === 'administrador'">
+          <a routerLink="listar-producto">Chat</a>
+        </li>
+        <li><a (click)="cerrarSesion()" style="cursor: pointer;">Cerrar sesión</a></li>
       </ng-container>
 
-      <ng-container *ngIf="!isLoggedIn">
+      <ng-container *ngIf="!estaLogueado">
         <li><a routerLink="login">Iniciar sesión</a></li>
         <li><a routerLink="sign-up">Registrarse</a></li>
       </ng-container>
     </ul>
   </nav>
 
-  <button class="menu-toggle" (click)="toggleMenu()">☰</button>
+  <button class="menu-toggle" (click)="alternarMenu()">☰</button>
 </header>
-
-
 
 <nav class="nav-side" [class.open]="menuVisible">
   <ul>
-    <li><a routerLink="">Home</a></li>
+    <li><a routerLink="">Inicio</a></li>
     <li><a routerLink="comprar-productos">Comprar</a></li>
 
-    <ng-container *ngIf="isLoggedIn">
+    <ng-container *ngIf="estaLogueado">
       <li><a routerLink="mis-compras">Mis compras</a></li>
+      <li><a routerLink="mi-carrito">Carrito</a></li>
       <li *ngIf="rol === 'administrador'">
-        <a routerLink="listar-producto">Admin Productos</a>
+        <a routerLink="listar-producto">Administrar productos</a>
       </li>
-      <li><a (click)="logout()" style="cursor: pointer;">Cerrar sesión</a></li>
+      <li><a (click)="cerrarSesion()" style="cursor: pointer;">Cerrar sesión</a></li>
     </ng-container>
 
-    <ng-container *ngIf="!isLoggedIn">
+    <ng-container *ngIf="!estaLogueado">
       <li><a routerLink="login">Iniciar sesión</a></li>
       <li><a routerLink="sign-up">Registrarse</a></li>
     </ng-container>

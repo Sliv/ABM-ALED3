@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'; 
+import { Component, OnInit } from '@angular/core';  
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -12,35 +12,35 @@ import { filter } from 'rxjs/operators';
 })
 export class MenuComponent implements OnInit {
   menuVisible: boolean = false;
-  isLoggedIn: boolean = false;
+  estaLogueado: boolean = false;
   rol: string | null = null; 
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.checkLoginStatus();
+    this.verificarEstadoLogin();
 
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter(evento => evento instanceof NavigationEnd))
       .subscribe(() => {
-        this.checkLoginStatus();
+        this.verificarEstadoLogin();
       });
   }
 
-  toggleMenu() {
+  alternarMenu(): void {
     this.menuVisible = !this.menuVisible;
   }
 
-  checkLoginStatus(): void {
-    const userJson = localStorage.getItem('usuario');  
-    const user = userJson ? JSON.parse(userJson) : null;
-    this.isLoggedIn = !!user;
-    this.rol = user?.rol || null;
+  verificarEstadoLogin(): void {
+    const usuarioJSON = localStorage.getItem('usuario');  
+    const usuario = usuarioJSON ? JSON.parse(usuarioJSON) : null;
+    this.estaLogueado = !!usuario;
+    this.rol = usuario?.rol || null;
   }
 
-  logout(): void {
+  cerrarSesion(): void {
     localStorage.removeItem('usuario'); 
-    this.isLoggedIn = false;
+    this.estaLogueado = false;
     this.rol = null;
     this.router.navigate(['login']);
   }

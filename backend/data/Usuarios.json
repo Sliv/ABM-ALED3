@@ -518,5 +518,40 @@
     "username": "NuevaCuenta",
     "password": "1234",
     "rol": "usuario"
+  },
+  {
+    "username": "Test",
+    "password": "1234",
+    "rol": "usuario"
+  },
+  {
+    "username": "Testt",
+    "password": "4444",
+    "rol": "usuario"
+  },
+  {
+    "username": "ASD",
+    "password": "1111",
+    "rol": "usuario"
+  },
+  {
+    "username": "Pruebaa",
+    "password": "7777",
+    "rol": "usuario"
+  },
+  {
+    "username": "Probandoooo1",
+    "password": "1234",
+    "rol": "usuario"
+  },
+  {
+    "username": "Oggiani",
+    "password": "5555",
+    "rol": "usuario"
+  },
+  {
+    "username": "Usuario",
+    "password": "1111",
+    "rol": "usuario"
   }
 ]

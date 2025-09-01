@@ -13,5 +13,5 @@ app.use('/api/productos', require('./routes/product'));
 app.use('/api/compras', require('./routes/compra'));
 
 app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor en http://localhost:${PORT}`);
 });

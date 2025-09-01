@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
-
-interface User {
-  username: string;
-  password: string;
-  rol?: string;
-}
+import { User } from '../Modelos/user.model'; 
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +17,9 @@ export class AuthService {
     );
   }
 
-  login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password }).pipe(
-      tap((res: any) => {
+  login(username: string, password: string): Observable<{ mensaje: string; usuario: User }> {
+    return this.http.post<{ mensaje: string; usuario: User }>(`${this.apiUrl}/login`, { username, password }).pipe(
+      tap((res) => {
         localStorage.setItem('usuario', JSON.stringify(res.usuario));
       }),
       catchError(err => throwError(() => new Error(err.error?.message || 'Credenciales inválidas')))

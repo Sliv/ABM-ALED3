@@ -6,15 +6,15 @@
     </div>
     <div class="right-panel">
       <h3>Registro</h3>
-      <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-        <label for="username">Usuario<span class="required">*</span></label>
-        <input type="text" id="username" formControlName="username" placeholder="Escriba su Usuario" />
+      <form [formGroup]="formularioRegistro" (ngSubmit)="registrar()">
+        <label for="usuario">Usuario <span class="required">*</span></label>
+        <input type="text" id="usuario" formControlName="usuario" placeholder="Escribí tu usuario" />
 
-        <label for="password">Contraseña<span class="required">*</span></label>
-        <input type="password" id="password" formControlName="password" placeholder="Escriba su Contraseña" />
+        <label for="contraseña">Contraseña <span class="required">*</span></label>
+        <input type="password" id="contraseña" formControlName="contraseña" placeholder="Escribí tu contraseña" />
 
-        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
-        <button type="submit" [disabled]="signUpForm.invalid" class="signin-btn">Registrarse</button>
+        <div *ngIf="mensajeError" class="error-message">{{ mensajeError }}</div>
+        <button type="submit" [disabled]="formularioRegistro.invalid" class="signin-btn">Registrarse</button>
       </form>
     </div>
   </div>
