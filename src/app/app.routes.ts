@@ -8,6 +8,7 @@ import { MisComprasComponent } from './Paginas/mis-compras/mis-compras.component
 import { MiCarritoComponent } from './Paginas/mi-carrito/mi-carrito.component';
 import { ProductoComponent } from './Paginas/producto/producto.component';
 import { FacturaComponent } from './component/factura/factura.component';
+import { ChatComponent } from './Paginas/chat/chat.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -15,6 +16,7 @@ export const routes: Routes = [
     { path: 'sign-up', component: SignUpComponent },
     { path: 'mi-carrito', component: MiCarritoComponent },
     { path: 'comprar-productos', component: ComprarProductosComponent },
+    { path: 'chat', component: ChatComponent },
     { path: 'mis-compras', component: MisComprasComponent },
     { path: 'listar-producto', component: ListarProductoComponent },
     { path: 'producto/:id', component: ProductoComponent },

@@ -1,0 +1,49 @@
+.chat-wrapper {
+  display: flex;
+  height: 515px;
+}
+
+.left-panel {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #2e2e2e;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 10px;
+  background: rgb(233, 232, 232);
+}
+
+.chat-messages .misMensajes {
+  text-align: right;
+  background-color: green;
+}
+
+.chat-messages .susMensajes {
+  text-align: left;
+  background-color: red;
+  color: white;
+}
+
+.chat-write {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.chat-write input {
+  flex: 1;
+  padding: 5px;
+}
+
+.chat-write button {
+  margin-left: 10px;
+}
+
+.right-panel {
+  flex: 1;
+  padding: 15px;
+  background: #fafafa;
+}
