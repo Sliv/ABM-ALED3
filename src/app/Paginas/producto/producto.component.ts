@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,11 @@ import { Producto } from '../../Modelos/producto';
 import { CompraService } from '../../servicios/compra.service';
 import { Compra } from '../../Modelos/compra.model';
 
+interface CarritoItem {
+  producto: Producto & { id: string };
+  cantidad: number;
+}
+
 @Component({
   selector: 'app-producto',
   standalone: true,
@@ -16,15 +21,13 @@ import { Compra } from '../../Modelos/compra.model';
   styleUrls: ['./producto.component.css']
 })
 export class ProductoComponent implements OnInit {
-  producto?: Producto;
+  producto?: Producto & { id: string };
   cantidad: number = 1;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private productoService: ProductoService,
-    private compraService: CompraService
-  ) {}
+  private productoService = inject(ProductoService); 
+  private compraService = inject(CompraService);     
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
@@ -34,25 +37,25 @@ export class ProductoComponent implements OnInit {
     }
 
     try {
-      // Convertimos el Observable en Promise
       const productos = await firstValueFrom(this.productoService.obtenerProductos());
-      const prod = productos.find((p: Producto) => p.id === id);
-      if (prod) {
-        this.producto = prod;
-      } else {
+      const prod = productos.find(p => p.id === id);
+      if (!prod || !prod.id) {
         this.router.navigate(['/comprar-productos']);
+        return;
       }
+      this.producto = { ...prod, id: prod.id! };
     } catch (err) {
       console.error('Error al cargar productos:', err);
+      alert('No se pudieron cargar los productos. Intente más tarde.');
+      this.router.navigate(['/comprar-productos']);
     }
   }
 
   agregarAlCarrito(): void {
-    if (!this.producto || !this.producto.id) return;
+    if (!this.producto) return;
 
     const usuario = localStorage.getItem('usuario');
-    const username = usuario ? JSON.parse(usuario).username : null;
-
+    const username = usuario ? JSON.parse(usuario)?.username : null;
     if (!username) {
       alert('Debes iniciar sesión para agregar productos al carrito.');
       this.router.navigate(['/login']);
@@ -60,17 +63,19 @@ export class ProductoComponent implements OnInit {
     }
 
     const carritoKey = 'carrito_' + username;
-    const data = localStorage.getItem(carritoKey);
-    const carritoActual: { producto: Producto; cantidad: number }[] =
-      data && data !== 'undefined' ? JSON.parse(data) : [];
+    let carritoActual: CarritoItem[] = [];
+    try {
+      const data = localStorage.getItem(carritoKey);
+      carritoActual = data ? JSON.parse(data) : [];
+    } catch {
+      carritoActual = [];
+    }
 
-    const existente = carritoActual.find(p => p.producto.id === this.producto!.id);
-
+    const existente = carritoActual.find(item => item.producto.id === this.producto!.id);
     if (existente) {
       existente.cantidad += this.cantidad;
     } else {
-      const prodSeguro = { ...this.producto, id: this.producto.id! };
-      carritoActual.push({ producto: prodSeguro, cantidad: this.cantidad });
+      carritoActual.push({ producto: { ...this.producto }, cantidad: this.cantidad });
     }
 
     localStorage.setItem(carritoKey, JSON.stringify(carritoActual));
@@ -78,29 +83,28 @@ export class ProductoComponent implements OnInit {
   }
 
   comprarAhora(): void {
-    if (!this.producto || !this.producto.id) return;
+    if (!this.producto) return;
 
     const usuario = localStorage.getItem('usuario');
-    const username = usuario ? JSON.parse(usuario).username : null;
-
+    const username = usuario ? JSON.parse(usuario)?.username : null;
     if (!username) {
       alert('Debes iniciar sesión para realizar una compra.');
       this.router.navigate(['/login']);
       return;
     }
 
-    const productoSeguro = { ...this.producto, id: this.producto.id! };
-
     const compra: Compra = {
       username,
-      productos: [{ producto: productoSeguro, cantidad: this.cantidad }],
+      productos: [{ producto: { ...this.producto }, cantidad: this.cantidad }],
       fecha: new Date().toISOString()
     };
 
     this.compraService.agregarCompra(compra).subscribe({
       next: () => {
-        const productosAComprar = [{ producto: productoSeguro, cantidad: this.cantidad }];
-        localStorage.setItem('factura_temp', JSON.stringify(productosAComprar));
+        localStorage.setItem(
+          'factura_temp',
+          JSON.stringify([{ producto: { ...this.producto }, cantidad: this.cantidad }])
+        );
         this.router.navigate(['/factura']);
       },
       error: () => {

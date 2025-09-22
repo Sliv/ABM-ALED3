@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Firestore, collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Producto } from '../Modelos/producto';
 
 @Injectable({
@@ -10,12 +11,13 @@ export class ProductoService {
   private productosRef;
 
   constructor(private firestore: Firestore) {
-    this.productosRef = collection(this.firestore, 'Productos'); // debe existir exactamente
+    this.productosRef = collection(this.firestore, 'Productos');
   }
 
   obtenerProductos(): Observable<Producto[]> {
-    // Evitamos orderBy por ahora para descartar errores
-    return collectionData(this.productosRef, { idField: 'id' }) as Observable<Producto[]>;
+    return from(getDocs(this.productosRef)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Producto)))
+    );
   }
 
   async agregarProducto(producto: Producto): Promise<void> {

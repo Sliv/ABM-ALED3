@@ -65,9 +65,8 @@ export class MiCarritoComponent implements OnInit {
       return;
     }
 
-    // Convertimos los productos para que id nunca sea undefined
     const productosCompra = this.carrito
-      .filter(item => item.producto.id) // filtramos solo productos con id definido
+      .filter(item => item.producto.id) 
       .map(item => ({
         producto: {
           id: item.producto.id!,

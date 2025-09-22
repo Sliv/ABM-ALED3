@@ -40,7 +40,6 @@ export class LoginComponent {
         error: err => {
           console.error('Error al iniciar sesión:', err);
 
-          // Firebase devuelve códigos de error, no "err.error.message"
           if (err.code === 'auth/user-not-found') {
             this.errorMessage = 'Usuario no encontrado';
           } else if (err.code === 'auth/wrong-password') {
