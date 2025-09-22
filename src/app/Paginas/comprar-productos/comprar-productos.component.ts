@@ -27,12 +27,22 @@ export class ComprarProductosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.productoService.obtenerProductos().subscribe((productos: Producto[]) => {
-      this.productos = productos;
+    this.cargarProductos();
+  }
+
+  cargarProductos(): void {
+    this.productoService.obtenerProductos().subscribe({
+      next: (data: Producto[]) => {
+        this.productos = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar productos:', err);
+      }
     });
   }
 
-  verProducto(id: number) {
+  verProducto(id?: string) {
+    if (!id) return; // evita pasar undefined
     this.router.navigate(['/producto', id]);
   }
 }

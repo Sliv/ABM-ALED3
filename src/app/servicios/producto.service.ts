@@ -1,34 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 import { Producto } from '../Modelos/producto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
-  private apiUrl = 'http://localhost:3000/api/productos';
+  private productosRef;
 
-  constructor(private http: HttpClient) {}
+  constructor(private firestore: Firestore) {
+    this.productosRef = collection(this.firestore, 'Productos'); // debe existir exactamente
+  }
 
   obtenerProductos(): Observable<Producto[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      map(productos => productos.map(p => ({
-        ...p,
-        precio: p.precioARS 
-      })))
-    );
+    // Evitamos orderBy por ahora para descartar errores
+    return collectionData(this.productosRef, { idField: 'id' }) as Observable<Producto[]>;
   }
 
-  agregarProducto(producto: Producto): Observable<Producto> {
-    return this.http.post<Producto>(this.apiUrl, producto);
+  async agregarProducto(producto: Producto): Promise<void> {
+    const { id, ...data } = producto;
+    await addDoc(this.productosRef, data);
   }
 
-  actualizarProducto(producto: Producto): Observable<Producto> {
-    return this.http.put<Producto>(`${this.apiUrl}/${producto.id}`, producto);
+  async actualizarProducto(producto: Producto): Promise<void> {
+    if (!producto.id) throw new Error('Producto sin id');
+    const docRef = doc(this.firestore, 'Productos', producto.id);
+    await updateDoc(docRef, { ...producto });
   }
 
-  eliminarProducto(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  async eliminarProducto(id: string): Promise<void> {
+    const docRef = doc(this.firestore, 'Productos', id);
+    await deleteDoc(docRef);
   }
 }

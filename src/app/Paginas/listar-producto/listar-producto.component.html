@@ -8,7 +8,7 @@
       <div class="form-row">
         <input formControlName="nombre" placeholder="Nombre" />
         <input formControlName="descripcion" placeholder="Descripción" />
-        <input formControlName="precioARS" type="number" placeholder="Precio ARS" />
+        <input formControlName="precio" type="number" placeholder="Precio ARS" />
       </div>
       <div class="form-row">
         <input formControlName="categoria" placeholder="Categoría" />
@@ -16,7 +16,9 @@
           📁 Subir Imagen
           <input type="file" (change)="cargarImagen($event)" hidden />
         </label>
-        <button type="submit"class= "btn agregar">{{ modoEdicion ? 'Actualizar' : ' ➕ Agregar nuevo Producto' }}</button>
+        <button type="submit" class="btn agregar">
+          {{ modoEdicion ? 'Actualizar' : '➕ Agregar nuevo Producto' }}
+        </button>
       </div>
     </form>
   </div>

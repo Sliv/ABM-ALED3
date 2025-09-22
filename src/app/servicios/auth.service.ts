@@ -1,36 +1,69 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
-import { User } from '../Modelos/user.model'; 
+import { 
+  Auth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  updateProfile, 
+  User as FirebaseUser 
+} from '@angular/fire/auth';
+import { from, Observable, map, tap } from 'rxjs';
+import { User } from '../Modelos/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(private auth: Auth) {}
 
-  register(username: string, password: string, rol: string = 'usuario'): Observable<any> {
-    return this.http.post(`${this.apiUrl}/sign-up`, { username, password, rol }).pipe(
-      catchError(err => throwError(() => new Error(err.error?.message || 'Error en el registro')))
-    );
-  }
-
-  login(username: string, password: string): Observable<{ mensaje: string; usuario: User }> {
-    return this.http.post<{ mensaje: string; usuario: User }>(`${this.apiUrl}/login`, { username, password }).pipe(
-      tap((res) => {
-        localStorage.setItem('usuario', JSON.stringify(res.usuario));
+  // REGISTRO
+  register(email: string, password: string, username?: string, rol: string = 'usuario'): Observable<User> {
+    return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
+      tap(async (res) => {
+        if (username) {
+          await updateProfile(res.user, { displayName: username });
+        }
       }),
-      catchError(err => throwError(() => new Error(err.error?.message || 'Credenciales inválidas')))
+      map(res => {
+        const u: User = {
+          username: res.user.displayName || email,
+          password: '', // 🚫 nunca guardes password localmente
+          rol
+        };
+        localStorage.setItem('usuario', JSON.stringify(u)); // opcional, solo para cache rápida
+        return u;
+      })
     );
   }
 
+  // LOGIN
+  login(email: string, password: string): Observable<User> {
+    return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
+      map(res => {
+        const u: User = {
+          username: res.user.displayName || res.user.email || '',
+          password: '', // 🚫 no guardamos password
+          rol: 'usuario' // ⚠️ en Firebase tendrías que manejar roles en Firestore, no hardcodeado
+        };
+        return u;
+      })
+    );
+  }
+
+  // LOGOUT
   logout(): void {
+    signOut(this.auth);
     localStorage.removeItem('usuario');
   }
 
+  // VERIFICAR SESIÓN
   isLoggedIn(): boolean {
     return !!localStorage.getItem('usuario');
+  }
+
+  // OBTENER USUARIO ACTUAL
+  getCurrentUser(): FirebaseUser | null {
+    return this.auth.currentUser;
   }
 }

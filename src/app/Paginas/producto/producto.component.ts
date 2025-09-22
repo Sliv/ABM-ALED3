@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { ProductoService } from '../../servicios/producto.service';
 import { Producto } from '../../Modelos/producto';
 import { CompraService } from '../../servicios/compra.service';
@@ -25,20 +26,29 @@ export class ProductoComponent implements OnInit {
     private compraService: CompraService
   ) {}
 
-  ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.productoService.obtenerProductos().subscribe(productos => {
-      const prod = productos.find(p => p.id === id);
+  async ngOnInit(): Promise<void> {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
+      this.router.navigate(['/comprar-productos']);
+      return;
+    }
+
+    try {
+      // Convertimos el Observable en Promise
+      const productos = await firstValueFrom(this.productoService.obtenerProductos());
+      const prod = productos.find((p: Producto) => p.id === id);
       if (prod) {
         this.producto = prod;
       } else {
         this.router.navigate(['/comprar-productos']);
       }
-    });
+    } catch (err) {
+      console.error('Error al cargar productos:', err);
+    }
   }
 
   agregarAlCarrito(): void {
-    if (!this.producto) return;
+    if (!this.producto || !this.producto.id) return;
 
     const usuario = localStorage.getItem('usuario');
     const username = usuario ? JSON.parse(usuario).username : null;
@@ -51,14 +61,16 @@ export class ProductoComponent implements OnInit {
 
     const carritoKey = 'carrito_' + username;
     const data = localStorage.getItem(carritoKey);
-    const carritoActual = data && data !== 'undefined' ? JSON.parse(data) : [];
+    const carritoActual: { producto: Producto; cantidad: number }[] =
+      data && data !== 'undefined' ? JSON.parse(data) : [];
 
-    const existente = carritoActual.find((p: any) => p.producto?.id === this.producto!.id);
+    const existente = carritoActual.find(p => p.producto.id === this.producto!.id);
 
     if (existente) {
       existente.cantidad += this.cantidad;
     } else {
-      carritoActual.push({ producto: this.producto, cantidad: this.cantidad });
+      const prodSeguro = { ...this.producto, id: this.producto.id! };
+      carritoActual.push({ producto: prodSeguro, cantidad: this.cantidad });
     }
 
     localStorage.setItem(carritoKey, JSON.stringify(carritoActual));
@@ -66,7 +78,7 @@ export class ProductoComponent implements OnInit {
   }
 
   comprarAhora(): void {
-    if (!this.producto) return;
+    if (!this.producto || !this.producto.id) return;
 
     const usuario = localStorage.getItem('usuario');
     const username = usuario ? JSON.parse(usuario).username : null;
@@ -77,19 +89,17 @@ export class ProductoComponent implements OnInit {
       return;
     }
 
+    const productoSeguro = { ...this.producto, id: this.producto.id! };
+
     const compra: Compra = {
       username,
-      productos: [
-        { producto: this.producto, cantidad: this.cantidad }
-      ],
+      productos: [{ producto: productoSeguro, cantidad: this.cantidad }],
       fecha: new Date().toISOString()
     };
 
     this.compraService.agregarCompra(compra).subscribe({
       next: () => {
-        const productosAComprar = [
-          { producto: this.producto, cantidad: this.cantidad }
-        ];
+        const productosAComprar = [{ producto: productoSeguro, cantidad: this.cantidad }];
         localStorage.setItem('factura_temp', JSON.stringify(productosAComprar));
         this.router.navigate(['/factura']);
       },

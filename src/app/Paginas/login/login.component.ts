@@ -33,13 +33,21 @@ export class LoginComponent {
 
       this.authService.login(username, password).subscribe({
         next: res => {
-          console.log('Respuesta del backend:', res);
+          console.log('Usuario autenticado:', res);
           alert('Login exitoso');
           this.router.navigate(['']);
         },
         error: err => {
           console.error('Error al iniciar sesión:', err);
-          this.errorMessage = err.error?.message || err.message || 'Error en el login';
+
+          // Firebase devuelve códigos de error, no "err.error.message"
+          if (err.code === 'auth/user-not-found') {
+            this.errorMessage = 'Usuario no encontrado';
+          } else if (err.code === 'auth/wrong-password') {
+            this.errorMessage = 'Contraseña incorrecta';
+          } else {
+            this.errorMessage = 'Error en el login: ' + (err.message || '');
+          }
         }
       });
     } else {
@@ -47,3 +55,5 @@ export class LoginComponent {
     }
   }
 }
+
+// SilviaS silvia.sanchez@fakeemail.com

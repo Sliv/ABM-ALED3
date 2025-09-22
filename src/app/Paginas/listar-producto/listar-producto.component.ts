@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../servicios/producto.service';
 import { Producto } from '../../Modelos/producto';
-import { CommonModule } from '@angular/common'; 
-import { FiltroProductoPipe } from '../../pipes/filtro-producto.pipe'; 
-import { FormsModule } from '@angular/forms';
+import { FiltroProductoPipe } from '../../pipes/filtro-producto.pipe';
 
 @Component({
   selector: 'app-producto',
@@ -14,8 +14,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FiltroProductoPipe,
-    FormsModule
+    FormsModule,
+    FiltroProductoPipe
   ]
 })
 export class ListarProductoComponent implements OnInit {
@@ -39,7 +39,7 @@ export class ListarProductoComponent implements OnInit {
     this.productoForm = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
-      precioARS: ['', [Validators.required, Validators.min(1)]],
+      precio: [0, [Validators.required, Validators.min(1)]],
       categoria: ['', Validators.required],
       imagen: ['', Validators.required]
     });
@@ -47,35 +47,35 @@ export class ListarProductoComponent implements OnInit {
 
   cargarProductos() {
     this.productoService.obtenerProductos().subscribe({
-      next: (productos) => this.productos = productos,
+      next: (data: Producto[]) => {
+        this.productos = data;
+      },
       error: (err) => console.error('Error al obtener productos:', err)
     });
   }
 
-  guardarProducto() {
+  async guardarProducto() {
     if (this.productoForm.invalid) return;
 
-    if (this.modoEdicion && this.productoEnEdicion) {
-      const productoActualizado: Producto = {
-        ...this.productoEnEdicion,
-        ...this.productoForm.value
+    try {
+      const productoData: Producto = {
+        ...this.productoForm.value,
+        id: this.productoEnEdicion?.id
       };
-      this.productoService.actualizarProducto(productoActualizado).subscribe({
-        next: () => {
-          this.modoEdicion = false;
-          this.productoEnEdicion = null;
-          this.cargarProductos();
-        },
-        error: (err) => console.error('Error al actualizar producto:', err)
-      });
-    } else {
-      this.productoService.agregarProducto(this.productoForm.value).subscribe({
-        next: () => this.cargarProductos(),
-        error: (err) => console.error('Error al agregar producto:', err)
-      });
-    }
 
-    this.productoForm.reset();
+      if (this.modoEdicion && productoData.id) {
+        await this.productoService.actualizarProducto(productoData);
+        this.modoEdicion = false;
+        this.productoEnEdicion = null;
+      } else {
+        await this.productoService.agregarProducto(productoData);
+      }
+
+      this.productoForm.reset();
+      this.cargarProductos();
+    } catch (err) {
+      console.error('Error al guardar producto:', err);
+    }
   }
 
   editarProducto(prod: Producto) {
@@ -84,11 +84,14 @@ export class ListarProductoComponent implements OnInit {
     this.modoEdicion = true;
   }
 
-  eliminarProducto(id: number) {
-    this.productoService.eliminarProducto(id).subscribe({
-      next: () => this.cargarProductos(),
-      error: (err) => console.error('Error al eliminar producto:', err)
-    });
+  async eliminarProducto(id?: string) {
+    if (!id) return;
+    try {
+      await this.productoService.eliminarProducto(id);
+      this.cargarProductos();
+    } catch (err) {
+      console.error('Error al eliminar producto:', err);
+    }
   }
 
   cargarImagen(event: Event): void {

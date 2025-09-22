@@ -28,20 +28,15 @@ export class MiCarritoComponent implements OnInit {
     if (username) {
       const datos = localStorage.getItem('carrito_' + username);
       this.carrito = datos ? JSON.parse(datos) : [];
-      this.carrito.forEach(item => {
-        if (item.seleccionado === undefined) {
-          item.seleccionado = false;
-        }
-      });
-    } else {
-      this.carrito = [];
+      this.carrito.forEach(item => item.seleccionado = item.seleccionado ?? false);
     }
   }
 
-  eliminarDelCarrito(id: number) {
+  eliminarDelCarrito(id?: string) {
+    if (!id) return;
+
     const usuario = localStorage.getItem('usuario'); 
     const username = usuario ? JSON.parse(usuario).username : null;
-
     if (!username) return;
 
     this.carrito = this.carrito.filter(item => item.producto.id !== id);
@@ -51,7 +46,6 @@ export class MiCarritoComponent implements OnInit {
   eliminarSeleccionados() {
     const usuario = localStorage.getItem('usuario'); 
     const username = usuario ? JSON.parse(usuario).username : null;
-
     if (!username) return;
 
     this.carrito = this.carrito.filter(item => !item.seleccionado);
@@ -65,25 +59,35 @@ export class MiCarritoComponent implements OnInit {
   generarFactura() {
     const usuario = localStorage.getItem('usuario');
     const username = usuario ? JSON.parse(usuario).username : null;
-
     if (!username) {
       alert('Debes iniciar sesión para generar una factura.');
       this.router.navigate(['/login']);
       return;
     }
 
+    // Convertimos los productos para que id nunca sea undefined
+    const productosCompra = this.carrito
+      .filter(item => item.producto.id) // filtramos solo productos con id definido
+      .map(item => ({
+        producto: {
+          id: item.producto.id!,
+          nombre: item.producto.nombre,
+          precio: item.producto.precio
+        },
+        cantidad: item.cantidad
+      }));
+
     const compra: Compra = {
       username,
-      productos: this.carrito,
+      productos: productosCompra,
       fecha: new Date().toISOString()
     };
 
     this.compraService.agregarCompra(compra).subscribe({
       next: () => {
-        localStorage.setItem('factura_temp', JSON.stringify(this.carrito));
+        localStorage.setItem('factura_temp', JSON.stringify(productosCompra));
         this.carrito = [];
         this.guardarCarrito(username);
-
         this.router.navigate(['/factura']);
       },
       error: () => {
@@ -94,7 +98,7 @@ export class MiCarritoComponent implements OnInit {
 
   calcularTotal(): number {
     return this.carrito.reduce(
-      (total, item) => total + item.producto.precio * item.cantidad,
+      (total, item) => total + (item.producto.precio || 0) * item.cantidad,
       0
     );
   }
