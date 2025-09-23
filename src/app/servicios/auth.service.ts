@@ -5,17 +5,36 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   updateProfile, 
+  onAuthStateChanged,
   User as FirebaseUser 
 } from '@angular/fire/auth';
-import { from, Observable, map, tap } from 'rxjs';
+import { from, Observable, map, tap, BehaviorSubject } from 'rxjs';
 import { User } from '../Modelos/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth) {
+    // Escuchar cambios de login/logout en Firebase
+    onAuthStateChanged(this.auth, (user) => {
+      if (user) {
+        const u: User = {
+          username: user.displayName || user.email || '',
+          password: '',
+          rol: 'usuario'
+        };
+        this.currentUserSubject.next(u);
+        localStorage.setItem('usuario', JSON.stringify(u));
+      } else {
+        this.currentUserSubject.next(null);
+        localStorage.removeItem('usuario');
+      }
+    });
+  }
 
   register(email: string, password: string, username?: string, rol: string = 'usuario'): Observable<User> {
     return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
@@ -25,13 +44,11 @@ export class AuthService {
         }
       }),
       map(res => {
-        const u: User = {
+        return {
           username: res.user.displayName || email,
-          password: '', 
+          password: '',
           rol
         };
-        localStorage.setItem('usuario', JSON.stringify(u)); 
-        return u;
       })
     );
   }
@@ -39,26 +56,24 @@ export class AuthService {
   login(email: string, password: string): Observable<User> {
     return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
       map(res => {
-        const u: User = {
+        return {
           username: res.user.displayName || res.user.email || '',
-          password: '', 
-          rol: 'usuario' 
+          password: '',
+          rol: 'usuario'
         };
-        return u;
       })
     );
   }
 
   logout(): void {
     signOut(this.auth);
-    localStorage.removeItem('usuario');
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('usuario');
+    return this.currentUserSubject.value !== null;
   }
 
-  getCurrentUser(): FirebaseUser | null {
-    return this.auth.currentUser;
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
   }
 }
