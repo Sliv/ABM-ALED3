@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';  
+import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { auth } from '../../../environments/firebase.config'; 
 
 @Component({
   selector: 'app-menu',
@@ -31,15 +32,22 @@ export class MenuComponent implements OnInit {
     this.menuVisible = !this.menuVisible;
   }
 
-  verificarEstadoLogin(): void {
-    const usuarioJSON = localStorage.getItem('usuario');  
-    const usuario = usuarioJSON ? JSON.parse(usuarioJSON) : null;
-    this.estaLogueado = !!usuario;
-    this.rol = usuario?.rol || null;
+  async verificarEstadoLogin(): Promise<void> {
+    const user = auth.currentUser;
+
+    if (user) {
+      this.estaLogueado = true;
+
+      const token = await user.getIdTokenResult(true);
+      this.rol = token.claims['admin'] ? 'administrador' : 'usuario';
+    } else {
+      this.estaLogueado = false;
+      this.rol = null;
+    }
   }
 
   cerrarSesion(): void {
-    localStorage.removeItem('usuario'); 
+    auth.signOut(); 
     this.estaLogueado = false;
     this.rol = null;
     this.router.navigate(['login']);

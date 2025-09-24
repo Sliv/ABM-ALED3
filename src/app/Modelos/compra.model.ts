@@ -1,19 +1,16 @@
-// src/app/Modelos/compra.model.ts
+import { Producto } from '../Modelos/producto';
+
 export interface CompraProducto {
-  producto: {
-    id: string;
-    nombre: string;
-    precio: number;
-    categoria?: string;  // opcional
-    imagen?: string;     // opcional
-  };
+  producto: Producto;
   cantidad: number;
+  total: number;
 }
 
 export interface Compra {
   id?: string;
+  usuarioId: string;
   username: string;
-  fecha: string;
+  fecha: string; 
   productos: CompraProducto[];
-  total?: number; // opcional si querés calcularlo al generar la compra
+  total?: number; 
 }

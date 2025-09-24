@@ -19,7 +19,6 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private auth: Auth) {
-    // Escuchar cambios de login/logout en Firebase
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
         const u: User = {

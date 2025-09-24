@@ -42,7 +42,7 @@ export class ComprarProductosComponent implements OnInit {
   }
 
   verProducto(id?: string) {
-    if (!id) return; // evita pasar undefined
+    if (!id) return; 
     this.router.navigate(['/producto', id]);
   }
 }

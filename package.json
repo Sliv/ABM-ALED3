@@ -20,6 +20,8 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
+    "chart.js": "^4.5.0",
+    "file-saver": "^2.0.5",
     "firebase": "^9.23.0",
     "firebase-admin": "^13.5.0",
     "rxjs": "~7.8.0",
@@ -30,6 +32,7 @@
     "@angular-devkit/build-angular": "^19.2.3",
     "@angular/cli": "^19.2.3",
     "@angular/compiler-cli": "^19.2.0",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
@@ -38,5 +41,19 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.7.2"
-  }
+  },
+  "description": "Este proyecto es una tienda virtual desarrollada con Angular para la clase de Algoritmos y Estructura de Datos III. Permite a los usuarios registrarse, iniciar sesión, ver productos, agregarlos al carrito, generar la factura, ver el equivalente de los precios en dólares y consultar el historial de compras.",
+  "main": "setAdmin.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sliv/ABM-ALED3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Sliv/ABM-ALED3/issues"
+  },
+  "homepage": "https://github.com/Sliv/ABM-ALED3#readme"
 }

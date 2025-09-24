@@ -1,26 +1,14 @@
 <div class="chat-wrapper">
-    <div class="left-panel">
-        <div class="chat-messages">
-            <div class="susMensajes">
-                <p>Mensaje</p>
-            </div>
-            <div class="misMensajes">
-                <p>Mensaje</p>
-            </div>
-        </div>
+  <div class="left-panel">
+    <div class="chat-messages" #scrollContainer>
+      <div *ngFor="let msg of mensajes$ | async" [ngClass]="{'misMensajes': msg.remitenteId === usuario?.uid, 'susMensajes': msg.remitenteId !== usuario?.uid}">
+        <p>{{ msg.texto }}</p>
+      </div>
+    </div>
 
     <div class="chat-write">
-      <input type="text" placeholder="Escribe un mensaje..." />
-      <button>Enviar</button>
-    </div>
-  </div>
-
-  <div class="right-panel">
-    <div class="product">
-        <img src="" alt="">
-        <h4>Titulo del producto</h4>
-        <p>Descripción breve</p>
-        <span>Precio</span>
+      <input type="text" placeholder="Escribe un mensaje..." [(ngModel)]="nuevoMensaje" (keydown.enter)="enviarMensaje()" />
+      <button (click)="enviarMensaje()">Enviar</button>
     </div>
   </div>
 </div>

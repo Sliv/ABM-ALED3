@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Producto } from '../../Modelos/producto';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CompraService } from '../../servicios/compra.service';
-import { Compra } from '../../Modelos/compra.model';
+import { Compra, CompraProducto } from '../../Modelos/compra.model';
+import { Producto } from '../../Modelos/producto';
+import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-mi-carrito',
@@ -15,6 +16,8 @@ import { Compra } from '../../Modelos/compra.model';
 })
 export class MiCarritoComponent implements OnInit {
   carrito: { producto: Producto; cantidad: number; seleccionado?: boolean }[] = [];
+  private auth = inject(Auth);
+  private usuario?: User;
 
   constructor(
     private router: Router,
@@ -22,32 +25,29 @@ export class MiCarritoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const usuario = localStorage.getItem('usuario'); 
-    const username = usuario ? JSON.parse(usuario).username : null;
+    onAuthStateChanged(this.auth, (usuario) => {
+      this.usuario = usuario || undefined;
+      this.cargarCarrito();
+    });
+  }
 
-    if (username) {
-      const datos = localStorage.getItem('carrito_' + username);
-      this.carrito = datos ? JSON.parse(datos) : [];
-      this.carrito.forEach(item => item.seleccionado = item.seleccionado ?? false);
-    }
+  cargarCarrito() {
+    const username = this.usuario?.email || 'Invitado';
+    const datos = localStorage.getItem('carrito_' + username);
+    this.carrito = datos ? JSON.parse(datos) : [];
+    this.carrito.forEach(item => item.seleccionado = item.seleccionado ?? false);
   }
 
   eliminarDelCarrito(id?: string) {
-    if (!id) return;
-
-    const usuario = localStorage.getItem('usuario'); 
-    const username = usuario ? JSON.parse(usuario).username : null;
-    if (!username) return;
-
+    if (!id || !this.usuario) return;
+    const username = this.usuario.email || 'Invitado';
     this.carrito = this.carrito.filter(item => item.producto.id !== id);
     this.guardarCarrito(username);
   }
 
   eliminarSeleccionados() {
-    const usuario = localStorage.getItem('usuario'); 
-    const username = usuario ? JSON.parse(usuario).username : null;
-    if (!username) return;
-
+    if (!this.usuario) return;
+    const username = this.usuario.email || 'Invitado';
     this.carrito = this.carrito.filter(item => !item.seleccionado);
     this.guardarCarrito(username);
   }
@@ -56,30 +56,35 @@ export class MiCarritoComponent implements OnInit {
     localStorage.setItem('carrito_' + username, JSON.stringify(this.carrito));
   }
 
-  generarFactura() {
-    const usuario = localStorage.getItem('usuario');
-    const username = usuario ? JSON.parse(usuario).username : null;
-    if (!username) {
+  async generarFactura() {
+    if (!this.usuario) {
       alert('Debes iniciar sesión para generar una factura.');
       this.router.navigate(['/login']);
       return;
     }
 
-    const productosCompra = this.carrito
-      .filter(item => item.producto.id) 
-      .map(item => ({
-        producto: {
-          id: item.producto.id!,
-          nombre: item.producto.nombre,
-          precio: item.producto.precio
-        },
-        cantidad: item.cantidad
-      }));
+    const usuarioId = this.usuario.uid;
+    const username = this.usuario.email || this.usuario.displayName || 'Invitado';
+
+    const productosCompra: CompraProducto[] = this.carrito.map(item => ({
+      producto: {
+        id: item.producto.id!,
+        nombre: item.producto.nombre,
+        precio: item.producto.precio,
+        descripcion: item.producto.descripcion,
+        categoria: item.producto.categoria || '',
+        imagen: item.producto.imagen || ''
+      },
+      cantidad: item.cantidad,
+      total: item.producto.precio * item.cantidad
+    }));
 
     const compra: Compra = {
+      usuarioId,
       username,
       productos: productosCompra,
-      fecha: new Date().toISOString()
+      fecha: new Date().toISOString(),
+      total: productosCompra.reduce((sum, item) => sum + item.total, 0)
     };
 
     this.compraService.agregarCompra(compra).subscribe({
@@ -89,7 +94,8 @@ export class MiCarritoComponent implements OnInit {
         this.guardarCarrito(username);
         this.router.navigate(['/factura']);
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error al generar la compra:', err);
         alert('Error al generar la compra');
       }
     });

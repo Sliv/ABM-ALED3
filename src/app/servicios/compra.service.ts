@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, doc, updateDoc, deleteDoc, CollectionReference } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Compra } from '../Modelos/compra.model';
 
@@ -7,10 +7,14 @@ import { Compra } from '../Modelos/compra.model';
   providedIn: 'root'
 })
 export class CompraService {
-  private comprasRef;
+  private comprasRef: CollectionReference;
 
   constructor(private firestore: Firestore) {
     this.comprasRef = collection(this.firestore, 'Compras'); 
+  }
+
+  getComprasRef(): CollectionReference {
+    return this.comprasRef;
   }
 
   obtenerCompras(): Observable<Compra[]> {
