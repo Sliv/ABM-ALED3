@@ -94,6 +94,26 @@
   background-color: #2980b9;
   transform: translateY(-2px);
 }
+.tabla-productos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.tabla-productos th, .tabla-productos td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+.tabla-productos th {
+  background-color: #3498db;
+  color: white;
+}
+
+.tabla-productos tr:nth-child(even) {
+  background-color: #ecf0f1;
+}
 
 @media (max-width: 900px) {
   .charts-container {

@@ -33,9 +33,23 @@
       <h3>Ventas</h3>
       <canvas id="ventasChart"></canvas>
     </div>
+
     <div class="chart-card">
-      <h3>Productos</h3>
-      <canvas id="productosChart"></canvas>
+      <h3>Productos más vendidos</h3>
+      <table class="tabla-productos">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad vendida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of productosVendidos">
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.cantidad }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 

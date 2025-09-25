@@ -8,9 +8,22 @@ import * as FileSaver from 'file-saver';
 
 Chart.register(...registerables);
 
+interface ProductoVenta {
+  cantidad: number;
+  producto: {
+    id: string;
+    nombre: string;
+    precio: number;
+    categoria: string;
+    descripcion: string;
+    imagen: string;
+  };
+  total: number;
+}
+
 interface Compra {
   fecha: string;
-  producto: { id: string; nombre: string; precio: number }[];
+  productos: ProductoVenta[]; 
   total: number;
   username: string;
   usuarioId: string;
@@ -32,7 +45,6 @@ export class ReporteriaDeVentasComponent implements OnInit {
   compras: Compra[] = [];
   esAdmin: boolean = false;
   chartVentas: Chart | null = null;
-  chartProductos: Chart | null = null;
 
   agrupacion: 'semana' | 'mes' | 'anio' = 'semana';
 
@@ -41,6 +53,8 @@ export class ReporteriaDeVentasComponent implements OnInit {
 
   aniosDisponibles: number[] = [];
   anioSeleccionado: number = new Date().getFullYear();
+
+  productosVendidos: { nombre: string; cantidad: number }[] = [];
 
   constructor() {}
 
@@ -79,7 +93,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
     const rows = this.compras.map(c => [
       c.fecha,
       c.username,
-      c.producto.map(p => p.nombre).join('; '),
+      c.productos.map(p => p.producto.nombre + ` (x${p.cantidad})`).join('; '),
       c.total
     ]);
 
@@ -195,7 +209,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
 
   actualizarGrafico() {
     this.generarGraficoVentas();
-    this.generarGraficoProductos();
+    this.generarTablaProductos();
   }
 
   generarGraficoVentas() {
@@ -210,7 +224,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
     if (this.agrupacion === 'mes') {
       labels = labels.map(l => {
         const fecha = new Date(l);
-        return fecha.getDate().toString();
+        return fecha.getDate().toString(); 
       });
     }
 
@@ -231,28 +245,20 @@ export class ReporteriaDeVentasComponent implements OnInit {
     });
   }
 
-  generarGraficoProductos() {
+  generarTablaProductos() {
     const contador: { [nombre: string]: number } = {};
     this.compras.forEach(c => {
-      c.producto.forEach(p => {
-        contador[p.nombre] = (contador[p.nombre] || 0) + 1;
+      if (!c.productos) return;
+      c.productos.forEach(p => {
+        const nombre = p.producto.nombre;
+        const cantidad = p.cantidad || 1;
+        contador[nombre] = (contador[nombre] || 0) + cantidad;
       });
     });
 
-    if (this.chartProductos) {
-      this.chartProductos.destroy();
-    }
-
-    this.chartProductos = new Chart('productosChart', {
-      type: 'pie',
-      data: {
-        labels: Object.keys(contador),
-        datasets: [{
-          data: Object.values(contador),
-          backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF','#FF9F40']
-        }]
-      },
-      options: { responsive: true }
-    });
+    this.productosVendidos = Object.keys(contador).map(nombre => ({
+      nombre,
+      cantidad: contador[nombre]
+    })).sort((a, b) => b.cantidad - a.cantidad);
   }
 }
