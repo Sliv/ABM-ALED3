@@ -1,8 +1,31 @@
-<div class="reporteria-wrapper">
+<div class="reporteria-wrapper" *ngIf="esAdmin; else noAcceso">  
   <h2>Reportería de Ventas</h2>
 
-  <div class="export-section">
-    <button class="btn-export">Exportar a CSV</button>
+  <div class="filters">
+    <div class="filter-item">
+      <label for="agrupacion">Agrupar por:</label>
+      <select id="agrupacion" [(ngModel)]="agrupacion" (change)="actualizarGrafico()">
+        <option value="semana">Semana actual</option>
+        <option value="mes">Mes</option>
+        <option value="anio">Año</option>
+      </select>
+    </div>
+
+    <div class="filter-item" *ngIf="agrupacion === 'mes'">
+      <label for="meses">Seleccionar mes:</label>
+      <select id="meses" [(ngModel)]="mesesSeleccionados[0]" (change)="actualizarGrafico()">
+        <option *ngFor="let mes of mesesDisponibles" [value]="mes.value">
+          {{ mes.label }}
+        </option>
+      </select>
+    </div>
+
+    <div class="filter-item" *ngIf="agrupacion === 'anio'">
+      <label for="anio">Seleccionar año:</label>
+      <select id="anio" [(ngModel)]="anioSeleccionado" (change)="actualizarGrafico()">
+        <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
+      </select>
+    </div>
   </div>
 
   <div class="charts-container">
@@ -10,15 +33,17 @@
       <h3>Ventas</h3>
       <canvas id="ventasChart"></canvas>
     </div>
-
     <div class="chart-card">
-      <h3>Evolución del Dólar</h3>
-      <canvas id="dolarChart"></canvas>
-    </div>
-
-    <div class="chart-card">
-      <h3>Productos Más Vendidos</h3>
+      <h3>Productos</h3>
       <canvas id="productosChart"></canvas>
     </div>
   </div>
+
+  <div class="export-section">
+    <button class="btn-export" (click)="exportarCSV()">Exportar CSV</button>
+  </div>
 </div>
+
+<ng-template #noAcceso>
+  <p>No tienes permisos para ver esta sección.</p>
+</ng-template>

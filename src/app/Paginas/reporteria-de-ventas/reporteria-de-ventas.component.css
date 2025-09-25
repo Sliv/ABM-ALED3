@@ -1,58 +1,111 @@
 .reporteria-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c3e50;
 }
 
 .reporteria-wrapper h2 {
   text-align: center;
   margin-bottom: 30px;
+  font-size: 2rem;
+  color: #34495e;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+}
+
+.filter-item label {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.filter-item select {
+  margin-top: 5px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  min-width: 150px;
+  max-width: 200px;
+}
+
+.filter-item select[multiple] {
+  height: 120px;
+  overflow-y: auto;
+}
+
+.filter-item small {
+  margin-top: 3px;
+  color: #7f8c8d;
+  font-size: 0.75rem;
+}
+
+.charts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.chart-card {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.chart-card h3 {
+  text-align: center;
+  margin-bottom: 20px;
   color: #2c3e50;
 }
 
 .export-section {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 20px;
+  margin-top: 25px;
 }
 
 .btn-export {
   background-color: #3498db;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 12px 24px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.3s;
+  font-weight: 600;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .btn-export:hover {
   background-color: #2980b9;
+  transform: translateY(-2px);
 }
 
-.charts-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.chart-card {
-  background-color: #ecf0f1;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.chart-card h3 {
-  text-align: center;
-  margin-bottom: 15px;
-  color: #34495e;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .charts-container {
     grid-template-columns: 1fr;
+  }
+
+  .filters {
+    justify-content: flex-start;
+  }
+
+  .filter-item select[multiple] {
+    max-width: 100%;
+    height: 100px;
   }
 }
