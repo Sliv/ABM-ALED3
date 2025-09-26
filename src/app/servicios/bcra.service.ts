@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, timer, switchMap, map, catchError, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 interface DetalleCotizacion {
   codigoMoneda: string;
@@ -28,7 +29,6 @@ export class BcraService {
 
   constructor(private http: HttpClient) {}
 
-
   private formatDate(date: Date): string {
     const yyyy = date.getFullYear();
     const mm = (date.getMonth() + 1).toString().padStart(2, '0'); 
@@ -36,6 +36,7 @@ export class BcraService {
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  // Método actual: devuelve el tipo de cambio más reciente
   obtenerTipoCambioUSD(): Observable<number> {
     const hoy = new Date();
     const fechaHasta = this.formatDate(hoy);
@@ -49,20 +50,41 @@ export class BcraService {
     return this.http.get<ApiResponse>(url).pipe(
       map(response => {
         const resultados = response.results;
-        if (!resultados || resultados.length === 0) {
-          return 0;
-        }
-        
+        if (!resultados || resultados.length === 0) return 0;
+
         const resultadoMasReciente = resultados[0];
-
-        if (!resultadoMasReciente.detalle || resultadoMasReciente.detalle.length === 0) {
-          return 0;
-        }
-
         const detalleUSD = resultadoMasReciente.detalle.find(d => d.codigoMoneda === 'USD');
         return detalleUSD ? detalleUSD.tipoCotizacion : 0;
       }),
       catchError(() => of(0))
+    );
+  }
+
+  // Nuevo método: devuelve la evolución del USD en los últimos `dias` días
+  obtenerEvolucionUSD(dias: number = 7): Observable<{fecha: string, valor: number}[]> {
+    const hoy = new Date();
+    const fechaHasta = this.formatDate(hoy);
+
+    const desdeDate = new Date(hoy);
+    desdeDate.setDate(hoy.getDate() - (dias - 1));
+    const fechaDesde = this.formatDate(desdeDate);
+
+    const url = `${this.apiUrl}?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+
+    return this.http.get<ApiResponse>(url).pipe(
+      map(response => {
+        const resultados = response.results;
+        if (!resultados || resultados.length === 0) return [];
+
+        return resultados.map(r => {
+          const detalleUSD = r.detalle.find(d => d.codigoMoneda === 'USD');
+          return {
+            fecha: r.fecha.split('T')[0],
+            valor: detalleUSD ? detalleUSD.tipoCotizacion : 0
+          };
+        }).sort((a, b) => a.fecha.localeCompare(b.fecha));
+      }),
+      catchError(() => of([]))
     );
   }
 }

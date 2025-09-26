@@ -5,6 +5,7 @@ import { auth, db } from '../../../environments/firebase.config';
 import { collection, getDocs } from 'firebase/firestore';
 import { Chart, registerables } from 'chart.js';
 import * as FileSaver from 'file-saver';
+import { BcraService } from '../../servicios/bcra.service';
 
 Chart.register(...registerables);
 
@@ -23,7 +24,7 @@ interface ProductoVenta {
 
 interface Compra {
   fecha: string;
-  productos: ProductoVenta[]; 
+  productos: ProductoVenta[];
   total: number;
   username: string;
   usuarioId: string;
@@ -45,6 +46,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
   compras: Compra[] = [];
   esAdmin: boolean = false;
   chartVentas: Chart | null = null;
+  chartDolar: Chart | null = null;
 
   agrupacion: 'semana' | 'mes' | 'anio' = 'semana';
 
@@ -55,8 +57,9 @@ export class ReporteriaDeVentasComponent implements OnInit {
   anioSeleccionado: number = new Date().getFullYear();
 
   productosVendidos: { nombre: string; cantidad: number }[] = [];
+  evolucionDolar: { fecha: string; valor: number }[] = [];
 
-  constructor() {}
+  constructor(private bcraService: BcraService) {}
 
   async ngOnInit() {
     await this.verificarAdmin();
@@ -71,6 +74,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
     }
 
     this.actualizarGrafico();
+    this.cargarEvolucionDolar();
   }
 
   async verificarAdmin() {
@@ -93,7 +97,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
     const rows = this.compras.map(c => [
       c.fecha,
       c.username,
-      c.productos.map(p => p.producto.nombre + ` (x${p.cantidad})`).join('; '),
+      c.productos.map(p => `${p.producto.nombre} (x${p.cantidad})`).join('; '),
       c.total
     ]);
 
@@ -153,8 +157,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
       finSemana.setDate(inicioSemana.getDate() + 6);
 
       for (let d = new Date(inicioSemana); d <= finSemana; d.setDate(d.getDate() + 1)) {
-        const clave = d.toISOString().split('T')[0];
-        agrupadas[clave] = 0;
+        agrupadas[d.toISOString().split('T')[0]] = 0;
       }
 
       compras.forEach(c => {
@@ -164,16 +167,13 @@ export class ReporteriaDeVentasComponent implements OnInit {
           agrupadas[clave] += c.total;
         }
       });
-    }
-
-    else if (tipo === 'mes') {
+    } else if (tipo === 'mes') {
       const [anioSel, mesSel] = (this.mesesSeleccionados[0] || 
         `${hoy.getFullYear()}-${(hoy.getMonth() + 1).toString().padStart(2,'0')}`).split('-');
       const anio = parseInt(anioSel);
       const mes = parseInt(mesSel);
 
       const diasEnMes = new Date(anio, mes, 0).getDate();
-
       for (let d = 1; d <= diasEnMes; d++) {
         const clave = `${anio}-${mes.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
         agrupadas[clave] = 0;
@@ -182,17 +182,13 @@ export class ReporteriaDeVentasComponent implements OnInit {
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
         if (fecha.getFullYear() === anio && (fecha.getMonth() + 1) === mes) {
-          const clave = fecha.toISOString().split('T')[0];
-          agrupadas[clave] += c.total;
+          agrupadas[fecha.toISOString().split('T')[0]] += c.total;
         }
       });
-    }
-
-    else if (tipo === 'anio') {
+    } else if (tipo === 'anio') {
       const anio = this.anioSeleccionado;
       for (let m = 1; m <= 12; m++) {
-        const clave = `${anio}-${m.toString().padStart(2, '0')}`;
-        agrupadas[clave] = 0;
+        agrupadas[`${anio}-${m.toString().padStart(2, '0')}`] = 0;
       }
 
       compras.forEach(c => {
@@ -215,28 +211,22 @@ export class ReporteriaDeVentasComponent implements OnInit {
   generarGraficoVentas() {
     const agrupadas = this.agruparCompras(this.compras, this.agrupacion);
 
-    if (this.chartVentas) {
-      this.chartVentas.destroy();
-    }
+    if (this.chartVentas) this.chartVentas.destroy();
 
     let labels = Object.keys(agrupadas);
-
     if (this.agrupacion === 'mes') {
-      labels = labels.map(l => {
-        const fecha = new Date(l);
-        return fecha.getDate().toString(); 
-      });
+      labels = labels.map(l => new Date(l).getDate().toString());
     }
 
     this.chartVentas = new Chart('ventasChart', {
       type: this.agrupacion === 'anio' ? 'bar' : 'line',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
           label: `Ventas por ${this.agrupacion}`,
           data: Object.values(agrupadas),
-          backgroundColor: 'rgba(54, 162, 235, 0.6)',
-          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: 'rgba(33, 192, 19, 0.6)',
+          borderColor: 'rgba(0, 255, 13, 1)',
           borderWidth: 2,
           fill: this.agrupacion !== 'anio'
         }]
@@ -260,5 +250,33 @@ export class ReporteriaDeVentasComponent implements OnInit {
       nombre,
       cantidad: contador[nombre]
     })).sort((a, b) => b.cantidad - a.cantidad);
+  }
+
+  cargarEvolucionDolar() {
+    this.bcraService.obtenerEvolucionUSD(7).subscribe(data => {
+      this.evolucionDolar = data;
+      this.generarGraficoDolar();
+    });
+  }
+
+  generarGraficoDolar() {
+    if (this.chartDolar) this.chartDolar.destroy();
+
+    this.chartDolar = new Chart('dolarChart', {
+      type: 'line',
+      data: {
+        labels: this.evolucionDolar.map(d => d.fecha),
+        datasets: [{
+          label: 'Evolución USD (última semana)',
+          data: this.evolucionDolar.map(d => d.valor),
+          backgroundColor: 'rgba(33, 192, 19, 0.6)',
+          borderColor: 'rgba(0, 255, 13, 1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.2
+        }]
+      },
+      options: { responsive: true }
+    });
   }
 }
