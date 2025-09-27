@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { auth, db } from '../../../environments/firebase.config'; 
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { Chart, registerables } from 'chart.js';
 import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 import { BcraService } from '../../servicios/bcra.service';
 
 Chart.register(...registerables);
@@ -42,7 +43,7 @@ interface MesOpcion {
   templateUrl: './reporteria-de-ventas.component.html',
   styleUrls: ['./reporteria-de-ventas.component.css']
 })
-export class ReporteriaDeVentasComponent implements OnInit {
+export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
   compras: Compra[] = [];
   esAdmin: boolean = false;
   chartVentas: Chart | null = null;
@@ -59,22 +60,28 @@ export class ReporteriaDeVentasComponent implements OnInit {
   productosVendidos: { nombre: string; cantidad: number }[] = [];
   evolucionDolar: { fecha: string; valor: number }[] = [];
 
+  private comprasUnsubscribe: () => void = () => {};
+
   constructor(private bcraService: BcraService) {}
 
   async ngOnInit() {
     await this.verificarAdmin();
     if (!this.esAdmin) return;
 
-    await this.cargarCompras();
-    this.obtenerMesesDisponibles();
-    this.obtenerAniosDisponibles();
-
-    if (this.mesesDisponibles.length) {
-      this.mesesSeleccionados = [this.mesesDisponibles[0].value];
-    }
-
-    this.actualizarGrafico();
+    this.cargarComprasRealtime();
     this.cargarEvolucionDolar();
+  }
+
+  ngOnDestroy(): void {
+    if (this.comprasUnsubscribe) this.comprasUnsubscribe();
+  }
+
+  private formatearFecha(fecha: string): string {
+    const d = new Date(fecha);
+    const dia = d.getDate().toString().padStart(2, '0');
+    const mes = (d.getMonth() + 1).toString().padStart(2, '0');
+    const anio = d.getFullYear();
+    return `${dia}/${mes}/${anio}`;
   }
 
   async verificarAdmin() {
@@ -85,27 +92,50 @@ export class ReporteriaDeVentasComponent implements OnInit {
     }
   }
 
-  async cargarCompras() {
-    const querySnapshot = await getDocs(collection(db, 'Compras'));
-    this.compras = querySnapshot.docs.map(doc => doc.data() as Compra);
+  private cargarComprasRealtime() {
+    const comprasRef = collection(db, 'Compras');
+
+    this.comprasUnsubscribe = onSnapshot(comprasRef, (snapshot) => {
+      this.compras = snapshot.docs.map(doc => doc.data() as Compra);
+
+      this.obtenerMesesDisponibles();
+      this.obtenerAniosDisponibles();
+      this.actualizarGrafico();
+    }, (error) => {
+      console.error('Error al escuchar compras en tiempo real:', error);
+    });
   }
 
-  exportarCSV() {
+  exportarExcel() {
     if (!this.compras.length) return;
 
-    const header = ['Fecha', 'Cliente', 'Productos', 'Total'];
-    const rows = this.compras.map(c => [
-      c.fecha,
-      c.username,
-      c.productos.map(p => `${p.producto.nombre} (x${p.cantidad})`).join('; '),
-      c.total
-    ]);
+    const ventasData = this.compras.flatMap((c: Compra) =>
+      c.productos.map((p: any) => ({
+        Fecha: this.formatearFecha(c.fecha),
+        Producto: p.producto.nombre,
+        Cantidad: p.cantidad,
+        Total: p.cantidad * p.producto.precio
+      }))
+    );
+    const wsVentas: XLSX.WorkSheet = XLSX.utils.json_to_sheet(ventasData);
 
-    const csvContent =
-      [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const wsProductos: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.productosVendidos);
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    FileSaver.saveAs(blob, 'reporteria_ventas.csv');
+    const wsDolar: XLSX.WorkSheet = XLSX.utils.json_to_sheet(
+      this.evolucionDolar.map(d => ({
+        Fecha: this.formatearFecha(d.fecha),
+        Valor: d.valor
+      }))
+    );
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, wsVentas, 'Ventas');
+    XLSX.utils.book_append_sheet(wb, wsProductos, 'Top Productos');
+    XLSX.utils.book_append_sheet(wb, wsDolar, 'Evolución Dólar');
+
+    const excelBuffer: any = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(blob, 'reporteria_completa.xlsx');
   }
 
   private obtenerMesesDisponibles() {
@@ -136,13 +166,15 @@ export class ReporteriaDeVentasComponent implements OnInit {
                  (anio === anioActual.toString() && mes === mesActual ? ' (Actual)' : '')
         };
       });
+
+    if (this.mesesDisponibles.length && !this.mesesSeleccionados.length) {
+      this.mesesSeleccionados = [this.mesesDisponibles[0].value];
+    }
   }
 
   private obtenerAniosDisponibles() {
     const aniosSet = new Set<number>();
-    this.compras.forEach(c => {
-      aniosSet.add(new Date(c.fecha).getFullYear());
-    });
+    this.compras.forEach(c => aniosSet.add(new Date(c.fecha).getFullYear()));
     this.aniosDisponibles = Array.from(aniosSet).sort((a, b) => b - a);
   }
 
@@ -157,36 +189,38 @@ export class ReporteriaDeVentasComponent implements OnInit {
       finSemana.setDate(inicioSemana.getDate() + 6);
 
       for (let d = new Date(inicioSemana); d <= finSemana; d.setDate(d.getDate() + 1)) {
-        agrupadas[d.toISOString().split('T')[0]] = 0;
+        agrupadas[this.formatearFecha(d.toISOString())] = 0;
       }
 
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
         if (fecha >= inicioSemana && fecha <= finSemana) {
-          const clave = fecha.toISOString().split('T')[0];
+          const clave = this.formatearFecha(fecha.toISOString());
           agrupadas[clave] += c.total;
         }
       });
     } else if (tipo === 'mes') {
       const [anioSel, mesSel] = (this.mesesSeleccionados[0] || 
         `${hoy.getFullYear()}-${(hoy.getMonth() + 1).toString().padStart(2,'0')}`).split('-');
-      const anio = parseInt(anioSel);
-      const mes = parseInt(mesSel);
+      const anio = parseInt(anioSel, 10);
+      const mes = parseInt(mesSel, 10);
 
       const diasEnMes = new Date(anio, mes, 0).getDate();
       for (let d = 1; d <= diasEnMes; d++) {
-        const clave = `${anio}-${mes.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+        const clave = this.formatearFecha(`${anio}-${mes.toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`);
         agrupadas[clave] = 0;
       }
 
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
         if (fecha.getFullYear() === anio && (fecha.getMonth() + 1) === mes) {
-          agrupadas[fecha.toISOString().split('T')[0]] += c.total;
+          const clave = this.formatearFecha(c.fecha);
+          agrupadas[clave] += c.total;
         }
       });
     } else if (tipo === 'anio') {
-      const anio = this.anioSeleccionado;
+      const anio = Number(this.anioSeleccionado);
+
       for (let m = 1; m <= 12; m++) {
         agrupadas[`${anio}-${m.toString().padStart(2, '0')}`] = 0;
       }
@@ -194,7 +228,7 @@ export class ReporteriaDeVentasComponent implements OnInit {
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
         if (fecha.getFullYear() === anio) {
-          const clave = `${fecha.getFullYear()}-${(fecha.getMonth() + 1).toString().padStart(2,'0')}`;
+          const clave = `${anio}-${(fecha.getMonth() + 1).toString().padStart(2,'0')}`;
           agrupadas[clave] += c.total;
         }
       });
@@ -214,8 +248,12 @@ export class ReporteriaDeVentasComponent implements OnInit {
     if (this.chartVentas) this.chartVentas.destroy();
 
     let labels = Object.keys(agrupadas);
-    if (this.agrupacion === 'mes') {
-      labels = labels.map(l => new Date(l).getDate().toString());
+
+    if (this.agrupacion === 'mes') labels = labels.map(l => l.split('/')[0]);
+    if (this.agrupacion === 'anio') {
+      const nombresMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      labels = labels.map(l => nombresMeses[parseInt(l.split('-')[1], 10) - 1]);
     }
 
     this.chartVentas = new Chart('ventasChart', {
@@ -254,7 +292,10 @@ export class ReporteriaDeVentasComponent implements OnInit {
 
   cargarEvolucionDolar() {
     this.bcraService.obtenerEvolucionUSD(7).subscribe(data => {
-      this.evolucionDolar = data;
+      this.evolucionDolar = data.map(d => ({
+        fecha: this.formatearFecha(d.fecha),
+        valor: d.valor
+      }));
       this.generarGraficoDolar();
     });
   }

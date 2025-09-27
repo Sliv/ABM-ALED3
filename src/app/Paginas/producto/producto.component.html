@@ -15,3 +15,22 @@
     </div>
   </div>
 </div>
+
+<section class="pr-section">
+  <h2>Preguntas y respuestas</h2>
+
+  <div class="pr-input">
+    <input type="text" placeholder="Escribí una pregunta..." [(ngModel)]="preguntaTexto" #inputPregunta />
+    <button class="btn-send" (click)="enviarPregunta()">🔍</button>
+  </div>
+
+  <div *ngFor="let mensaje of (mostrarTodos ? mensajes : mensajes.slice(0,5)); trackBy: trackById" class="pr-item">
+    <p class="preguntas"><strong>{{ mensaje.username }}:</strong> {{ mensaje.texto }}</p>
+  </div>
+
+  <div *ngIf="mensajes.length > 5">
+    <button class="btn-ver-mas" (click)="toggleMostrarTodos()">
+      {{ mostrarTodos ? 'Ver menos' : 'Ver más' }}
+    </button>
+  </div>
+</section>

@@ -1,17 +1,27 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, ElementRef, ViewChild, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { ProductoService } from '../../servicios/producto.service';
 import { Producto } from '../../Modelos/producto';
 import { CompraService } from '../../servicios/compra.service';
 import { Compra, CompraProducto } from '../../Modelos/compra.model';
 import { Auth, User } from '@angular/fire/auth';
+import { Firestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy } from '@angular/fire/firestore';
 
 interface CarritoItem {
   producto: Producto & { id: string };
   cantidad: number;
+}
+
+interface Mensaje {
+  id?: string;
+  userId: string;
+  username: string;
+  rol: string;
+  texto: string;
+  fecha?: string;
 }
 
 @Component({
@@ -21,15 +31,23 @@ interface CarritoItem {
   templateUrl: './producto.component.html',
   styleUrls: ['./producto.component.css']
 })
-export class ProductoComponent implements OnInit {
+export class ProductoComponent implements OnInit, OnDestroy {
   producto?: Producto & { id: string };
   cantidad: number = 1;
+  preguntaTexto: string = '';
+  mensajes: Mensaje[] = [];
+  mostrarTodos: boolean = false;
+
+  @ViewChild('inputPregunta') inputPregunta!: ElementRef;
 
   private productoService = inject(ProductoService);
   private compraService = inject(CompraService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private auth = inject(Auth);
+  private firestore = inject(Firestore);
+
+  private mensajesUnsubscribe: (() => void) | undefined;
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
@@ -37,20 +55,25 @@ export class ProductoComponent implements OnInit {
       this.router.navigate(['/comprar-productos']);
       return;
     }
-
+    
     try {
       const productos = await firstValueFrom(this.productoService.obtenerProductos());
       const prod = productos.find(p => p.id === id);
-      if (!prod || !prod.id) {
+      if (!prod) {
         this.router.navigate(['/comprar-productos']);
         return;
       }
       this.producto = { ...prod, id: prod.id! };
+      this.cargarPreguntas();
     } catch (err) {
       console.error('Error al cargar productos:', err);
       alert('No se pudieron cargar los productos. Intente más tarde.');
       this.router.navigate(['/comprar-productos']);
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.mensajesUnsubscribe) this.mensajesUnsubscribe();
   }
 
   agregarAlCarrito(): void {
@@ -66,6 +89,7 @@ export class ProductoComponent implements OnInit {
     const username = currentUser.email || currentUser.displayName || 'Invitado';
     const carritoKey = 'carrito_' + username;
     let carritoActual: CarritoItem[] = [];
+
     try {
       const data = localStorage.getItem(carritoKey);
       carritoActual = data ? JSON.parse(data) : [];
@@ -127,5 +151,55 @@ export class ProductoComponent implements OnInit {
         alert('Error al guardar la compra');
       }
     });
+  }
+
+  private cargarPreguntas() {
+    if (!this.producto) return;
+
+    const mensajesRef = collection(this.firestore, `Preguntas/${this.producto.id}/Mensajes`);
+    const q = query(mensajesRef, orderBy('fecha', 'asc'));
+
+    this.mensajesUnsubscribe = onSnapshot(q, (snapshot) => {
+      this.mensajes = snapshot.docs.map(doc => ({
+        id: doc.id,
+        userId: doc.data()['userId'] || '',
+        username: doc.data()['username'] || 'Invitado',
+        rol: doc.data()['rol'] || 'usuario',
+        texto: doc.data()['texto'] || '',
+        fecha: doc.data()['fecha'] || ''
+      }));
+    });
+  }
+
+  async enviarPregunta() {
+    if (!this.preguntaTexto.trim() || !this.producto) return;
+
+    const currentUser: User | null = this.auth.currentUser;
+    const username = currentUser?.email || currentUser?.displayName || 'Invitado';
+    const userId = currentUser?.uid || 'anon';
+    const rol = 'usuario';
+
+    const padreRef = doc(this.firestore, `Preguntas/${this.producto.id}`);
+    await setDoc(padreRef, { productoId: this.producto.id }, { merge: true });
+
+    const mensajesCol = collection(this.firestore, `Preguntas/${this.producto.id}/Mensajes`);
+    await addDoc(mensajesCol, {
+      userId,
+      username,
+      rol,
+      texto: this.preguntaTexto,
+      fecha: new Date().toISOString()
+    });
+
+    this.preguntaTexto = '';
+    this.inputPregunta.nativeElement.focus();
+  }
+
+  toggleMostrarTodos() {
+    this.mostrarTodos = !this.mostrarTodos;
+  }
+
+  trackById(index: number, item: Mensaje) {
+    return item.id;
   }
 }

@@ -96,23 +96,56 @@ input[type="number"] {
   background-color: #1e8449;
 }
 
-@media (max-width: 768px) {
-  .producto-detalle {
-    flex-direction: column;
-    align-items: center;
-    padding: 1.5rem;
-  }
+.pr-section {
+  max-width: 100%;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
 
-  .producto-img {
-    width: 100%;
-    max-width: 100%;
-  }
+.pr-section h2 {
+  font-size: 22px;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
 
-  .producto-info {
-    width: 100%;
-  }
+.pr-input {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
 
-  .acciones {
-    justify-content: center;
-  }
+.pr-input input {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  font-size: 15px;
+  outline: none;
+}
+
+.pr-input .btn-send {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 0 1rem;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.pr-input .btn-send:hover {
+  background: #0056b3;
+}
+
+.pr-item {
+  margin-bottom: 1.5rem;
+}
+
+.pr-item .preguntas {
+  font-size: 15px;
+  margin-bottom: 0.3rem;
 }
