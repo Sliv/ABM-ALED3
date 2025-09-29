@@ -28,7 +28,7 @@
 
   <div class="pr-input">
     <input type="text" placeholder="Escribí una pregunta..." [(ngModel)]="preguntaTexto" #inputPregunta />
-    <button class="btn-send" (click)="enviarPregunta()">🔍</button>
+    <button class="btn-send" (click)="enviarPregunta()">></button>
   </div>
 
   <div *ngFor="let mensaje of (mostrarTodos ? mensajes : mensajes.slice(0,5)); trackBy: trackById" class="pr-item">

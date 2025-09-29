@@ -6,7 +6,6 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { Chart, registerables } from 'chart.js';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
-import { BcraService } from '../../servicios/bcra.service';
 
 Chart.register(...registerables);
 
@@ -47,7 +46,6 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
   compras: Compra[] = [];
   esAdmin: boolean = false;
   chartVentas: Chart | null = null;
-  chartDolar: Chart | null = null;
 
   agrupacion: 'semana' | 'mes' | 'anio' = 'semana';
 
@@ -58,46 +56,32 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
   anioSeleccionado: number = new Date().getFullYear();
 
   productosVendidos: { nombre: string; cantidad: number }[] = [];
-  evolucionDolar: { fecha: string; valor: number }[] = [];
 
   private comprasUnsubscribe: () => void = () => {};
 
-  constructor(private bcraService: BcraService) {}
-
-  async ngOnInit() {
-    await this.verificarAdmin();
-    if (!this.esAdmin) return;
-
-    this.cargarComprasRealtime();
-    this.cargarEvolucionDolar();
+  ngOnInit() {
+    this.verificarAdmin();
   }
 
   ngOnDestroy(): void {
     if (this.comprasUnsubscribe) this.comprasUnsubscribe();
   }
 
-  private formatearFecha(fecha: string): string {
-    const d = new Date(fecha);
-    const dia = d.getDate().toString().padStart(2, '0');
-    const mes = (d.getMonth() + 1).toString().padStart(2, '0');
-    const anio = d.getFullYear();
-    return `${dia}/${mes}/${anio}`;
-  }
-
-  async verificarAdmin() {
+  private async verificarAdmin() {
     const user = auth.currentUser;
     if (user) {
       const token = await user.getIdTokenResult(true);
-      this.esAdmin = token.claims['admin'] ? true : false;
+      this.esAdmin = !!token.claims['admin'];
+    }
+    if (this.esAdmin) {
+      this.cargarComprasRealtime();
     }
   }
 
   private cargarComprasRealtime() {
     const comprasRef = collection(db, 'Compras');
-
     this.comprasUnsubscribe = onSnapshot(comprasRef, (snapshot) => {
       this.compras = snapshot.docs.map(doc => doc.data() as Compra);
-
       this.obtenerMesesDisponibles();
       this.obtenerAniosDisponibles();
       this.actualizarGrafico();
@@ -106,31 +90,36 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
     });
   }
 
-  exportarExcel() {
+    exportarExcel() {
     if (!this.compras.length) return;
 
-    const ventasData = this.compras.flatMap((c: Compra) =>
-      c.productos.map((p: any) => ({
-        Fecha: this.formatearFecha(c.fecha),
-        Producto: p.producto.nombre,
-        Cantidad: p.cantidad,
-        Total: p.cantidad * p.producto.precio
-      }))
+      const ventasData = this.compras.flatMap(c =>
+      c.productos.map(p => ({
+          Fecha: this.formatearFecha(c.fecha),
+          Producto: p.producto.nombre,
+          Cantidad: p.cantidad,
+          Total: p.cantidad * p.producto.precio
+        }))
     );
+
     const wsVentas: XLSX.WorkSheet = XLSX.utils.json_to_sheet(ventasData);
     const wsProductos: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.productosVendidos);
-    const wsDolar: XLSX.WorkSheet = XLSX.utils.json_to_sheet(
-      this.evolucionDolar.map(d => ({ Fecha: d.fecha, Valor: d.valor }))
-    );
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, wsVentas, 'Ventas');
     XLSX.utils.book_append_sheet(wb, wsProductos, 'Top Productos');
-    XLSX.utils.book_append_sheet(wb, wsDolar, 'Evolución Dólar');
 
     const excelBuffer: any = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     FileSaver.saveAs(blob, 'reporteria_completa.xlsx');
+  }
+
+  private formatearFecha(fecha: string): string {
+    const d = new Date(fecha);
+    const dia = d.getDate().toString().padStart(2, '0');
+    const mes = (d.getMonth() + 1).toString().padStart(2, '0');
+    const anio = d.getFullYear();
+    return `${dia}/${mes}/${anio}`;
   }
 
   private obtenerMesesDisponibles() {
@@ -142,9 +131,7 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
 
     this.compras.forEach(c => {
       const fecha = new Date(c.fecha);
-      const anio = fecha.getFullYear();
-      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-      mesesSet.add(`${anio}-${mes}`);
+      mesesSet.add(`${fecha.getFullYear()}-${(fecha.getMonth()+1).toString().padStart(2,'0')}`);
     });
 
     const hoy = new Date();
@@ -173,20 +160,6 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
     this.aniosDisponibles = Array.from(aniosSet).sort((a, b) => b - a);
   }
 
-  private getSemanaActual(refDate: Date = new Date()): { inicio: Date, fin: Date } {
-    const dia = refDate.getDay(); 
-    const diffLunes = dia === 0 ? -6 : 1 - dia; 
-    const inicio = new Date(refDate);
-    inicio.setDate(refDate.getDate() + diffLunes);
-    inicio.setHours(0,0,0,0);
-
-    const fin = new Date(inicio);
-    fin.setDate(inicio.getDate() + 6);
-    fin.setHours(23,59,59,999);
-
-    return { inicio, fin };
-  }
-
   private agruparCompras(compras: Compra[], tipo: 'semana' | 'mes' | 'anio') {
     const agrupadas: { [clave: string]: number } = {};
     const hoy = new Date();
@@ -199,48 +172,57 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
 
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
+        const { inicio, fin } = this.getSemanaActual();
         if (fecha >= inicio && fecha <= fin) {
-          const clave = this.formatearFecha(fecha.toISOString());
-          agrupadas[clave] += c.total;
+          agrupadas[this.formatearFecha(fecha.toISOString())] += c.total;
         }
       });
-
     } else if (tipo === 'mes') {
       const [anioSel, mesSel] = (this.mesesSeleccionados[0] || 
-        `${hoy.getFullYear()}-${(hoy.getMonth() + 1).toString().padStart(2,'0')}`).split('-');
+        `${hoy.getFullYear()}-${(hoy.getMonth()+1).toString().padStart(2,'0')}`).split('-');
       const anio = parseInt(anioSel, 10);
       const mes = parseInt(mesSel, 10);
-
       const diasEnMes = new Date(anio, mes, 0).getDate();
+
       for (let d = 1; d <= diasEnMes; d++) {
-        const clave = this.formatearFecha(`${anio}-${mes.toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`);
-        agrupadas[clave] = 0;
+        agrupadas[this.formatearFecha(`${anio}-${mes.toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`)] = 0;
       }
 
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
-        if (fecha.getFullYear() === anio && (fecha.getMonth() + 1) === mes) {
-          const clave = this.formatearFecha(c.fecha);
-          agrupadas[clave] += c.total;
+        if (fecha.getFullYear() === anio && (fecha.getMonth()+1) === mes) {
+          agrupadas[this.formatearFecha(c.fecha)] += c.total;
         }
       });
-
     } else if (tipo === 'anio') {
-      const anio = Number(this.anioSeleccionado);
+      const anio = this.anioSeleccionado;
       for (let m = 1; m <= 12; m++) {
-        agrupadas[`${anio}-${m.toString().padStart(2, '0')}`] = 0;
+        agrupadas[`${anio}-${m.toString().padStart(2,'0')}`] = 0;
       }
 
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
         if (fecha.getFullYear() === anio) {
-          const clave = `${anio}-${(fecha.getMonth() + 1).toString().padStart(2,'0')}`;
-          agrupadas[clave] += c.total;
+          agrupadas[`${anio}-${(fecha.getMonth()+1).toString().padStart(2,'0')}`] += c.total;
         }
       });
     }
 
     return agrupadas;
+  }
+
+  private getSemanaActual(refDate: Date = new Date()): { inicio: Date, fin: Date } {
+    const dia = refDate.getDay();
+    const diffLunes = dia === 0 ? -6 : 1 - dia;
+    const inicio = new Date(refDate);
+    inicio.setDate(refDate.getDate() + diffLunes);
+    inicio.setHours(0,0,0,0);
+
+    const fin = new Date(inicio);
+    fin.setDate(inicio.getDate() + 6);
+    fin.setHours(23,59,59,999);
+
+    return { inicio, fin };
   }
 
   actualizarGrafico() {
@@ -292,49 +274,5 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
       nombre,
       cantidad: contador[nombre]
     })).sort((a, b) => b.cantidad - a.cantidad);
-  }
-
-  cargarEvolucionDolar() {
-    const { inicio, fin } = this.getSemanaActual();
-    const dias = Math.ceil((fin.getTime() - inicio.getTime()) / (1000*60*60*24)) + 1;
-
-    this.bcraService.obtenerEvolucionUSD(dias).subscribe(data => {
-      const fechaMap: { [fecha: string]: number } = {};
-      data.forEach(d => fechaMap[d.fecha] = d.valor);
-
-      const fechasSemana: string[] = [];
-      for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
-        fechasSemana.push(d.toISOString().split('T')[0]);
-      }
-
-      let ultimoValor = 0;
-      this.evolucionDolar = fechasSemana.map(f => {
-        if (fechaMap[f] && fechaMap[f] > 0) ultimoValor = fechaMap[f];
-        return { fecha: this.formatearFecha(f), valor: ultimoValor };
-      });
-
-      this.generarGraficoDolar();
-    });
-  }
-
-  generarGraficoDolar() {
-    if (this.chartDolar) this.chartDolar.destroy();
-
-    this.chartDolar = new Chart('dolarChart', {
-      type: 'line',
-      data: {
-        labels: this.evolucionDolar.map(d => d.fecha),
-        datasets: [{
-          label: 'Evolución USD (semana actual)',
-          data: this.evolucionDolar.map(d => d.valor),
-          backgroundColor: 'rgba(33, 192, 19, 0.6)',
-          borderColor: 'rgba(0, 255, 13, 1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.2
-        }]
-      },
-      options: { responsive: true }
-    });
   }
 }

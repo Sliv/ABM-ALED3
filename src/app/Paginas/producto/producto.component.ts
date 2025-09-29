@@ -198,9 +198,23 @@ export class ProductoComponent implements OnInit, OnDestroy {
     if (!this.preguntaTexto.trim() || !this.producto) return;
 
     const currentUser: User | null = this.auth.currentUser;
-    const username = currentUser?.email || currentUser?.displayName || 'Invitado';
-    const userId = currentUser?.uid || 'anon';
-    const rol = 'usuario';
+
+    if (!currentUser) {
+      this.mostrarNotificacion('Debes iniciar sesión para realizar una pregunta.', 'info');
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1000);
+      return;
+    }
+
+    const token = await currentUser.getIdTokenResult();
+    const esAdmin = token.claims['admin'] === true;
+
+    const usernameBase = currentUser.email || currentUser.displayName || 'Usuario';
+    const rol = esAdmin ? 'Admin' : 'Usuario';
+    const username = `${usernameBase} (${rol})`;
+
+    const userId = currentUser.uid;
 
     const padreRef = doc(this.firestore, `Preguntas/${this.producto.id}`);
     await setDoc(padreRef, { productoId: this.producto.id }, { merge: true });
