@@ -11,6 +11,13 @@
 
     <div class="acciones">
       <button class="btn-carrito" (click)="agregarAlCarrito()">Agregar al carrito</button>
+      <app-alerts
+        [mensaje]="mensajeAlerta"
+        [tipo]="tipoAlerta"
+        [visible]="mostrarAlerta"
+        [duracion]="20000"
+        (cerrado)="mostrarAlerta = false">
+      </app-alerts>
       <button class="btn-comprar" (click)="comprarAhora()">Comprar ahora</button>
     </div>
   </div>

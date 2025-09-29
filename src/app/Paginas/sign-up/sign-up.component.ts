@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
 export class SignUpComponent {
   formularioRegistro: FormGroup;
   mensajeError: string = '';
-
+  
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -34,7 +34,7 @@ export class SignUpComponent {
 
       this.authService.register(usuario, contraseña, rol).subscribe({
         next: () => {
-          alert('Usuario registrado exitosamente');
+          alert("Usuario registrado exitosamente");
           this.router.navigate(['login']);
         },
         error: err => {

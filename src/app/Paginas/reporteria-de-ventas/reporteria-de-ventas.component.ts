@@ -118,14 +118,9 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
       }))
     );
     const wsVentas: XLSX.WorkSheet = XLSX.utils.json_to_sheet(ventasData);
-
     const wsProductos: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.productosVendidos);
-
     const wsDolar: XLSX.WorkSheet = XLSX.utils.json_to_sheet(
-      this.evolucionDolar.map(d => ({
-        Fecha: this.formatearFecha(d.fecha),
-        Valor: d.valor
-      }))
+      this.evolucionDolar.map(d => ({ Fecha: d.fecha, Valor: d.valor }))
     );
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
@@ -178,27 +173,38 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
     this.aniosDisponibles = Array.from(aniosSet).sort((a, b) => b - a);
   }
 
+  private getSemanaActual(refDate: Date = new Date()): { inicio: Date, fin: Date } {
+    const dia = refDate.getDay(); 
+    const diffLunes = dia === 0 ? -6 : 1 - dia; 
+    const inicio = new Date(refDate);
+    inicio.setDate(refDate.getDate() + diffLunes);
+    inicio.setHours(0,0,0,0);
+
+    const fin = new Date(inicio);
+    fin.setDate(inicio.getDate() + 6);
+    fin.setHours(23,59,59,999);
+
+    return { inicio, fin };
+  }
+
   private agruparCompras(compras: Compra[], tipo: 'semana' | 'mes' | 'anio') {
     const agrupadas: { [clave: string]: number } = {};
     const hoy = new Date();
 
     if (tipo === 'semana') {
-      const inicioSemana = new Date(hoy);
-      inicioSemana.setDate(hoy.getDate() - hoy.getDay() + 1);
-      const finSemana = new Date(inicioSemana);
-      finSemana.setDate(inicioSemana.getDate() + 6);
-
-      for (let d = new Date(inicioSemana); d <= finSemana; d.setDate(d.getDate() + 1)) {
+      const { inicio, fin } = this.getSemanaActual();
+      for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
         agrupadas[this.formatearFecha(d.toISOString())] = 0;
       }
 
       compras.forEach(c => {
         const fecha = new Date(c.fecha);
-        if (fecha >= inicioSemana && fecha <= finSemana) {
+        if (fecha >= inicio && fecha <= fin) {
           const clave = this.formatearFecha(fecha.toISOString());
           agrupadas[clave] += c.total;
         }
       });
+
     } else if (tipo === 'mes') {
       const [anioSel, mesSel] = (this.mesesSeleccionados[0] || 
         `${hoy.getFullYear()}-${(hoy.getMonth() + 1).toString().padStart(2,'0')}`).split('-');
@@ -218,9 +224,9 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
           agrupadas[clave] += c.total;
         }
       });
+
     } else if (tipo === 'anio') {
       const anio = Number(this.anioSeleccionado);
-
       for (let m = 1; m <= 12; m++) {
         agrupadas[`${anio}-${m.toString().padStart(2, '0')}`] = 0;
       }
@@ -244,11 +250,9 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
 
   generarGraficoVentas() {
     const agrupadas = this.agruparCompras(this.compras, this.agrupacion);
-
     if (this.chartVentas) this.chartVentas.destroy();
 
     let labels = Object.keys(agrupadas);
-
     if (this.agrupacion === 'mes') labels = labels.map(l => l.split('/')[0]);
     if (this.agrupacion === 'anio') {
       const nombresMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -291,11 +295,24 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
   }
 
   cargarEvolucionDolar() {
-    this.bcraService.obtenerEvolucionUSD(7).subscribe(data => {
-      this.evolucionDolar = data.map(d => ({
-        fecha: this.formatearFecha(d.fecha),
-        valor: d.valor
-      }));
+    const { inicio, fin } = this.getSemanaActual();
+    const dias = Math.ceil((fin.getTime() - inicio.getTime()) / (1000*60*60*24)) + 1;
+
+    this.bcraService.obtenerEvolucionUSD(dias).subscribe(data => {
+      const fechaMap: { [fecha: string]: number } = {};
+      data.forEach(d => fechaMap[d.fecha] = d.valor);
+
+      const fechasSemana: string[] = [];
+      for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
+        fechasSemana.push(d.toISOString().split('T')[0]);
+      }
+
+      let ultimoValor = 0;
+      this.evolucionDolar = fechasSemana.map(f => {
+        if (fechaMap[f] && fechaMap[f] > 0) ultimoValor = fechaMap[f];
+        return { fecha: this.formatearFecha(f), valor: ultimoValor };
+      });
+
       this.generarGraficoDolar();
     });
   }
@@ -308,7 +325,7 @@ export class ReporteriaDeVentasComponent implements OnInit, OnDestroy {
       data: {
         labels: this.evolucionDolar.map(d => d.fecha),
         datasets: [{
-          label: 'Evolución USD (última semana)',
+          label: 'Evolución USD (semana actual)',
           data: this.evolucionDolar.map(d => d.valor),
           backgroundColor: 'rgba(33, 192, 19, 0.6)',
           borderColor: 'rgba(0, 255, 13, 1)',

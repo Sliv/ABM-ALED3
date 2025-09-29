@@ -2,13 +2,14 @@ import { Component, OnInit, ElementRef, ViewChild, inject, OnDestroy } from '@an
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ProductoService } from '../../servicios/producto.service';
 import { Producto } from '../../Modelos/producto';
 import { CompraService } from '../../servicios/compra.service';
 import { Compra, CompraProducto } from '../../Modelos/compra.model';
 import { Auth, User } from '@angular/fire/auth';
 import { Firestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy } from '@angular/fire/firestore';
+import { AlertsComponent } from '../../component/alerts/alerts.component';
 
 interface CarritoItem {
   producto: Producto & { id: string };
@@ -27,7 +28,7 @@ interface Mensaje {
 @Component({
   selector: 'app-producto',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AlertsComponent],
   templateUrl: './producto.component.html',
   styleUrls: ['./producto.component.css']
 })
@@ -37,6 +38,11 @@ export class ProductoComponent implements OnInit, OnDestroy {
   preguntaTexto: string = '';
   mensajes: Mensaje[] = [];
   mostrarTodos: boolean = false;
+
+  mostrarAlerta: boolean = false;
+  mensajeAlerta: string = '';
+  tipoAlerta: 'exito' | 'error' | 'advertencia' | 'info' = 'info';
+  duracionAlerta: number = 20000;
 
   @ViewChild('inputPregunta') inputPregunta!: ElementRef;
 
@@ -48,6 +54,7 @@ export class ProductoComponent implements OnInit, OnDestroy {
   private firestore = inject(Firestore);
 
   private mensajesUnsubscribe: (() => void) | undefined;
+  private alertaTimeout: any;
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
@@ -67,13 +74,25 @@ export class ProductoComponent implements OnInit, OnDestroy {
       this.cargarPreguntas();
     } catch (err) {
       console.error('Error al cargar productos:', err);
-      alert('No se pudieron cargar los productos. Intente más tarde.');
+      this.mostrarNotificacion('No se pudieron cargar los productos. Intente más tarde.', 'error');
       this.router.navigate(['/comprar-productos']);
     }
   }
 
   ngOnDestroy(): void {
     if (this.mensajesUnsubscribe) this.mensajesUnsubscribe();
+    if (this.alertaTimeout) clearTimeout(this.alertaTimeout);
+  }
+
+  mostrarNotificacion(mensaje: string, tipo: 'exito' | 'error' | 'advertencia' | 'info' = 'info', duracion: number = this.duracionAlerta) {
+    this.mensajeAlerta = mensaje;
+    this.tipoAlerta = tipo;
+    this.mostrarAlerta = true;
+
+    if (this.alertaTimeout) clearTimeout(this.alertaTimeout);
+    this.alertaTimeout = setTimeout(() => {
+      this.mostrarAlerta = false;
+    }, duracion);
   }
 
   agregarAlCarrito(): void {
@@ -81,8 +100,10 @@ export class ProductoComponent implements OnInit, OnDestroy {
 
     const currentUser: User | null = this.auth.currentUser;
     if (!currentUser) {
-      alert('Debes iniciar sesión para agregar productos al carrito.');
-      this.router.navigate(['/login']);
+      this.mostrarNotificacion('Debes iniciar sesión para agregar productos al carrito.', 'info');
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1000);
       return;
     }
 
@@ -105,7 +126,7 @@ export class ProductoComponent implements OnInit, OnDestroy {
     }
 
     localStorage.setItem(carritoKey, JSON.stringify(carritoActual));
-    alert('Producto agregado al carrito');
+    this.mostrarNotificacion('Producto agregado al carrito', 'exito');
   }
 
   comprarAhora(): void {
@@ -113,8 +134,10 @@ export class ProductoComponent implements OnInit, OnDestroy {
 
     const currentUser: User | null = this.auth.currentUser;
     if (!currentUser) {
-      alert('Debes iniciar sesión para realizar una compra.');
-      this.router.navigate(['/login']);
+      this.mostrarNotificacion('Debes iniciar sesión para realizar una compra.', 'info');
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1000);
       return;
     }
 
@@ -148,7 +171,7 @@ export class ProductoComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error al guardar la compra:', err);
-        alert('Error al guardar la compra');
+        this.mostrarNotificacion('Error al guardar la compra', 'error');
       }
     });
   }

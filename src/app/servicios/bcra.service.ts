@@ -36,7 +36,6 @@ export class BcraService {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // Método actual: devuelve el tipo de cambio más reciente
   obtenerTipoCambioUSD(): Observable<number> {
     const hoy = new Date();
     const fechaHasta = this.formatDate(hoy);
@@ -60,7 +59,6 @@ export class BcraService {
     );
   }
 
-  // Nuevo método: devuelve la evolución del USD en los últimos `dias` días
   obtenerEvolucionUSD(dias: number = 7): Observable<{fecha: string, valor: number}[]> {
     const hoy = new Date();
     const fechaHasta = this.formatDate(hoy);

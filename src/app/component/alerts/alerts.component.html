@@ -1,3 +1,10 @@
-<div class="alerts">
-
+<div class="overlay" *ngIf="visible">
+  <div class="alerta" [ngClass]="tipo">
+    <div class="alerta-header">
+      <span class="close-btn" (click)="cerrar()">X</span>
+    </div>
+    <div class="alerta-content">
+      <p>{{ mensaje }}</p>
+    </div>
+  </div>
 </div>
