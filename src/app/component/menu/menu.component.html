@@ -17,9 +17,6 @@
         <li *ngIf="rol === 'administrador'">
           <a routerLink="reporteria-de-ventas">Reporteria ventas</a>
         </li>
-        <li *ngIf="rol === 'administrador'">
-          <a routerLink="chat">Chat</a>
-        </li>
         <li><a (click)="cerrarSesion()" style="cursor: pointer;">Cerrar sesión</a></li>
       </ng-container>
 

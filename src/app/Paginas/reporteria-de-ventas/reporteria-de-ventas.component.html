@@ -1,26 +1,24 @@
-<div class="reporteria-wrapper" *ngIf="esAdmin; else noAcceso">  
+<div class="reporteria-wrapper" *ngIf="esAdmin; else noAcceso">
   <h2>Reportería de Ventas</h2>
 
   <div class="filters">
     <div class="filter-item">
       <label for="agrupacion">Agrupar por:</label>
       <select id="agrupacion" [(ngModel)]="agrupacion" (change)="actualizarGrafico()">
-        <option value="semana">Semana actual</option>
+        <option value="semana">Semana</option>
         <option value="mes">Mes</option>
         <option value="anio">Año</option>
       </select>
     </div>
 
-    <div class="filter-item" *ngIf="agrupacion === 'mes'">
+    <div *ngIf="agrupacion === 'mes'" class="filter-item">
       <label for="meses">Seleccionar mes:</label>
       <select id="meses" [(ngModel)]="mesesSeleccionados[0]" (change)="actualizarGrafico()">
-        <option *ngFor="let mes of mesesDisponibles" [value]="mes.value">
-          {{ mes.label }}
-        </option>
+        <option *ngFor="let mes of mesesDisponibles" [value]="mes.value">{{ mes.label }}</option>
       </select>
     </div>
 
-    <div class="filter-item" *ngIf="agrupacion === 'anio'">
+    <div *ngIf="agrupacion === 'anio'" class="filter-item">
       <label for="anio">Seleccionar año:</label>
       <select id="anio" [(ngModel)]="anioSeleccionado" (change)="actualizarGrafico()">
         <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
@@ -31,26 +29,28 @@
   <div class="charts-container">
     <div class="chart-card">
       <h3>Ventas</h3>
-      <canvas id="ventasChart"></canvas>
+      <canvas #ventasCanvas></canvas>
     </div>
 
     <div class="chart-card">
-      <h3>Productos más vendidos</h3>
-      <table class="tabla-productos">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Cantidad vendida</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of productosVendidos">
-            <td>{{ p.nombre }}</td>
-            <td>{{ p.cantidad }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <h3>Evolución del Dólar (BCRA)</h3>
+      <canvas #dolarCanvas></canvas>
     </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>Productos más vendidos</h3>
+    <table class="tabla-productos">
+      <thead>
+        <tr><th>Producto</th><th>Cantidad vendida</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of productosVendidos">
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.cantidad }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="export-section">
