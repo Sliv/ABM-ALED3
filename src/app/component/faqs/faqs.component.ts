@@ -22,7 +22,8 @@ export class FaqComponent {
   }
 
   expandirTodos(): void {
-    this.faqs.forEach(faq => faq.estaAbierto = true);
+  const algunoCerrado = this.faqs.some(faq => !faq.estaAbierto);
+  this.faqs.forEach(faq => faq.estaAbierto = algunoCerrado);
   }
 
   contraerTodos(): void {

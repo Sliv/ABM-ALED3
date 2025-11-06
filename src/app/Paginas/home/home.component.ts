@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FaqComponent } from "../../component/faqs/faqs.component";
+import { CarouselComponent } from "../../component/carousel/carousel.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FaqComponent],
+  imports: [CommonModule, FaqComponent, CarouselComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

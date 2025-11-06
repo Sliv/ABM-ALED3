@@ -1,0 +1,27 @@
+.circulo {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 26px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.valido {
+  background-color: #2ecc71; 
+  box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+}
+
+.invalido {
+  background-color: #e74c3c; 
+  box-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
+}
+
+.circulo:active {
+  transform: scale(0.95);
+}
