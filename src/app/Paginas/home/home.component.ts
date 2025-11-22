@@ -2,15 +2,25 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FaqComponent } from "../../component/faqs/faqs.component";
 import { CarouselComponent } from "../../component/carousel/carousel.component";
+import { FooterComponent } from "../../component/footer/footer.component";
+import { NewsletterComponent } from "../../component/newsletter/newsletter.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FaqComponent, CarouselComponent],
+  imports: [CommonModule, FaqComponent, CarouselComponent, FooterComponent, NewsletterComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
+  cards = [
+  { image: 'assets/img1.webp', title: 'Red Wave', description: 'Simulation' },
+  { image: 'assets/img2.webp', title: 'Playground', description: 'Outdoor' },
+  { image: 'assets/img3.webp', title: 'Skyscrapers', description: 'City View' },
+  { image: 'assets/img4.webp', title: 'Round Stair', description: 'Architecture' },
+  { image: 'assets/img5.webp', title: 'Vintage Car', description: 'Retro' },
+];
+
   faqData = [
     {
       pregunta: '¿Cómo puedo crear una cuenta?',

@@ -1,2 +1,139 @@
-<div class="carousel">
+<div *ngIf="tipo === 'imagen'" 
+     class="carousel"
+     [style.width]="width"
+     [style.height]="height">
+
+  <div class="slides"
+       [class.no-transition]="disableTransition"
+       [style.transform]="'translateX(-' + currentIndex * 100 + '%)'">
+
+    <div class="slide" *ngFor="let img of imagenes; let i = index">
+
+      <div class="image-overlay" [ngClass]="img.posicion || 'bottom-left'">
+        <h2 *ngIf="img.titulo">{{ img.titulo }}</h2>
+        <p *ngIf="img.subtitulo">{{ img.subtitulo }}</p>
+      </div>
+
+      <a *ngIf="img.link; else noLink" [href]="img.link" target="_blank">
+        <img [src]="img.src" alt="Imagen del carrusel" />
+      </a>
+
+      <ng-template #noLink>
+        <img [src]="img.src" alt="Imagen del carrusel" />
+      </ng-template>
+
+    </div>
+  </div>
+
+  <button *ngIf="mostrarFlechas" class="prev" (click)="prev()">&#10094;</button>
+  <button *ngIf="mostrarFlechas" class="next" (click)="next()">&#10095;</button>
+
+  <div class="dots">
+    <span *ngFor="let img of imagenes; let i = index"
+          [class.active]="i === currentIndex"
+          (click)="goTo(i)"></span>
+  </div>
+</div>
+
+
+
+
+<div *ngIf="tipo === 'card'" 
+     class="card-carousel"
+     [style.width]="width"
+     [style.height]="height">
+
+  <div class="card-track"
+       [class.no-transition]="disableTransition"
+       [style.transform]="'translateX(-' + currentIndex * (100 / visibleCount) + '%)'"
+       [style.--gap]="gap">
+
+    <div class="card"
+         *ngFor="let item of items"
+         [style.flex]="'0 0 calc(100% / ' + visibleCount + ')'"
+         [style.maxWidth]="cardWidth"
+         [style.height]="cardHeight">
+
+      <a *ngIf="item.link; else noCardLink" [href]="item.link" target="_blank">
+        <div class="card-media" [style.height]="cardHeight">
+          <img [src]="item.image" alt="{{item.title}}" />
+        </div>
+
+        <div class="card-info">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.subtitle }}</p>
+          <p *ngIf="item.price" class="price">{{ item.price }}</p>
+          <p *ngIf="item.installments" class="installments">{{ item.installments }}</p>
+          <button *ngIf="item.buttonText" class="buy-btn">{{ item.buttonText }}</button>
+        </div>
+      </a>
+
+      <ng-template #noCardLink>
+        <div class="card-media" [style.height]="cardHeight">
+          <img [src]="item.image" alt="{{item.title}}" />
+        </div>
+
+        <div class="card-info">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.subtitle }}</p>
+          <p *ngIf="item.price" class="price">{{ item.price }}</p>
+          <p *ngIf="item.installments" class="installments">{{ item.installments }}</p>
+          <button *ngIf="item.buttonText" class="buy-btn">{{ item.buttonText }}</button>
+        </div>
+      </ng-template>
+
+    </div>
+  </div>
+
+  <button *ngIf="mostrarFlechas" class="prev" (click)="prev()">&#10094;</button>
+  <button *ngIf="mostrarFlechas" class="next" (click)="next()">&#10095;</button>
+</div>
+
+
+
+<div *ngIf="tipo === 'grid'"
+     class="grid-carousel"
+     [style.width]="width"
+     [style.height]="height">
+
+  <div class="grid-track"
+       [class.no-transition]="disableTransition"
+       [style.transform]="'translateX(-' + currentIndex * 100 + '%)'">
+
+    <div class="grid-page"
+         *ngFor="let page of [].constructor(Math.ceil(items.length / (filas * columnas))); let pageIndex = index"
+         [style.gridTemplateColumns]="'repeat(' + columnas + ', ' + cardWidth + ')'">
+
+      <div class="grid-card"
+           *ngFor="let item of items.slice(pageIndex * (filas * columnas), (pageIndex + 1) * (filas * columnas))"
+           [style.height]="cardHeight">
+
+        <a *ngIf="item.link; else noGridLink" [href]="item.link" target="_blank">
+          <div class="card-media" [style.height]="cardHeight">
+            <img [src]="item.image" alt="{{item.title}}" />
+          </div>
+
+          <div class="card-info">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.subtitle }}</p>
+          </div>
+        </a>
+
+        <ng-template #noGridLink>
+          <div class="card-media" [style.height]="cardHeight">
+            <img [src]="item.image" alt="{{item.title}}" />
+          </div>
+          <div class="card-info">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.subtitle }}</p>
+          </div>
+        </ng-template>
+
+      </div>
+    </div>
+  </div>
+
+  <button *ngIf="mostrarFlechas" class="prev" (click)="prev()">&#10094;</button>
+  <button *ngIf="mostrarFlechas" class="next" (click)="next()">&#10095;</button>
+
 </div>
