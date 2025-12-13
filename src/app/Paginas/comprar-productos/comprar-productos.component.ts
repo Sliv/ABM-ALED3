@@ -5,14 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../servicios/producto.service';
 import { Producto } from '../../Modelos/producto';
 import { FiltroProductoPipe } from '../../pipes/filtro-producto.pipe';
+import { FooterComponent } from "../../component/footer/footer.component";
 
 @Component({
   selector: 'app-comprar-productos',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    FiltroProductoPipe
+    CommonModule, FormsModule, FiltroProductoPipe, FooterComponent
   ],
   templateUrl: './comprar-productos.component.html',
   styleUrls: ['./comprar-productos.component.css']

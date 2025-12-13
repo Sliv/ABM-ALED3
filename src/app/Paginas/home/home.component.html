@@ -1,50 +1,49 @@
-<main class="home-container">
+<main class="home-container"> 
 
   <section class="hero">
     <app-carousel
       tipo="imagen"
       [imagenes]="[
         { 
-          src: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=1600',
-          link: 'https://unsplash.com/photos/1',
-          titulo: 'Creative Workspace',
-          subtitulo: 'Design • Inspiration • Ideas',
+          src: 'assets/Impresora.jpg',
+          link: '/producto/1',
+          titulo: 'Equipá tu espacio',
+          subtitulo: 'Tecnología y accesorios para tu día a día',
           posicion: 'bottom-left'
         },
         { 
-          src: 'https://images.unsplash.com/photo-1506765515384-028b60a970df?w=1600',
-          link: 'https://unsplash.com/photos/2',
-          titulo: 'Adventure Awaits',
-          subtitulo: 'Explore Nature',
+          src: 'assets/Zapatilla.jpg',
+          link: '/producto/1',
+          titulo: 'Comodidad que se mueve con vos',
+          subtitulo: 'Calzado urbano y deportivo',
           posicion: 'center'
         },
         { 
-          src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600',
-          link: 'https://unsplash.com/photos/3',
-          titulo: 'Modern Development',
-          subtitulo: 'Coding the future',
+          src: 'assets/Remera.jpg',
+          link: '/producto/1',
+          titulo: 'Estilo para todos los días',
+          subtitulo: 'Moda actual al mejor precio',
           posicion: 'top-right'
         }
       ]"
       [mostrarFlechas]="true"
       [autoplay]="true"
       [intervalo]="5000"
-      height="900px"
+      height="800px"
       width="100%">
     </app-carousel>
   </section>
 
-  <section class="section">
-    <h2 class="section-title">Popular Plants</h2>
-
+  <section class="section-card">
+    <h2 class="section-title">Productos más populares</h2>
     <app-carousel
       tipo="card"
       [items]="[
-        { image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600', title: 'Canna', subtitle: 'Indoor plant', price: 27300, cuotas: '3 cuotas sin interés', link: '/detalle/1' },
-        { image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600', title: 'Jade', subtitle: 'Succulent', price: 19990, cuotas: '3 cuotas sin interés', link: '/detalle/2' },
-        { image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600', title: 'Zebra', subtitle: 'Small cactus', price: 12500, cuotas: '3 cuotas sin interés', link: '/detalle/3' },
-        { image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600', title: 'Snake Plant', subtitle: 'Air purifier', price: 21900, cuotas: '3 cuotas sin interés', link: '/detalle/4' },
-        { image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600', title: 'Peace Lily', subtitle: 'Elegant leaves', price: 28990, cuotas: '3 cuotas sin interés', link: '/detalle/5' }
+        { image: 'assets/Batidora.jpg', title: 'Batidora eléctrica', subtitle: 'Potencia y practicidad en tu cocina', price: 27300, cuotas: '3 cuotas sin interés', link: '/producto/1' },
+        { image: 'assets/Tablet.png', title: 'Tablet multimedia', subtitle: 'Trabajo y entretenimiento en un solo lugar', price: 19990, cuotas: '12 cuotas sin interés', link: '/producto/1' },
+        { image: 'assets/ZapatillasPuma.jfif', title: 'Zapatillas deportivas', subtitle: 'Diseño y confort para cada paso', price: 12500, cuotas: '6 cuotas sin interés', link: '/producto/1' },
+        { image: 'assets/ZapatillasVans.jfif', title: 'Zapatillas urbanas', subtitle: 'Estilo casual para todos los días', price: 21900, cuotas: '3 cuotas sin interés', link: '/producto/1' },
+        { image: 'assets/Monitor.webp', title: 'Monitor Full HD', subtitle: 'Más productividad y mejor imagen', price: 28990, cuotas: '6 cuotas sin interés', link: '/producto/1' }
       ]"
       [visibleCount]="3"
       [mostrarFlechas]="true"
@@ -53,44 +52,45 @@
     </app-carousel>
   </section>
 
-  <section class="section">
+  <section class="section-banner">
+    <h2 class="section-title">Productos en oferta</h2>
     <app-carousel
       tipo="imagen"
       [imagenes]="[
         {
-          src: 'assets/banners/plant1.jpg',
-          titulo: 'Nature in your home',
-          subtitulo: 'The best indoor plants',
-          posicion: 'center'
+          src: 'assets/Router.jpg',
+          titulo: 'Conectividad sin límites',
+          subtitulo: 'Internet rápido y estable para tu hogar',
+          posicion: 'center',
+          link: '/producto/1'
         },
         {
-          src: 'assets/banners/plant2.jpg',
-          titulo: 'Premium Quality',
-          subtitulo: 'Hand-picked green life',
-          posicion: 'bottom-right'
+          src: 'assets/Notebook.jpg',
+          titulo: 'Potencia para trabajar y estudiar',
+          subtitulo: 'Notebooks al mejor precio',
+          posicion: 'bottom-right',
+          link: '/producto/1'
         }
       ]"
-      height="520px"
+      height="900px"
       [autoplay]="true">
     </app-carousel>
   </section>
 
-
   <section class="section">
-    <h2 class="section-title">Recommended For You</h2>
-
+    <h2 class="section-title">Tal vez te interese</h2>
     <app-carousel
       tipo="card"
       [items]="[
-        { image: 'assets/plant1.jpg', title: 'Canna', subtitle: 'Indoor plant', link: '/detalle/1' },
-        { image: 'assets/plant2.jpg', title: 'Jade', subtitle: 'Succulent', link: '/detalle/2' },
-        { image: 'assets/plant3.jpg', title: 'Zebra', subtitle: 'Small cactus', link: '/detalle/3' },
-        { image: 'assets/plant4.jpg', title: 'Snake', subtitle: 'Air purifier', link: '/detalle/4' },
-        { image: 'assets/plant5.jpg', title: 'Peace Lily', subtitle: 'Elegant leaves', link: '/detalle/5' },
-        { image: 'assets/plant6.jpg', title: 'Fern', subtitle: 'Shady plant', link: '/detalle/6' }
+        { image: 'assets/Batidora.jpg', title: 'Batidora compacta', subtitle: 'Ideal para el uso diario', link: '/producto/1' },
+        { image: 'assets/Tablet.png', title: 'Tablet liviana', subtitle: 'Perfecta para llevar a todos lados', link: '/producto/1' },
+        { image: 'assets/Router.jpg', title: 'Router Wi-Fi', subtitle: 'Cobertura en toda tu casa', link: '/producto/1' },
+        { image: 'assets/Monitor.webp', title: 'Monitor LED', subtitle: 'Calidad de imagen superior', link: '/producto/1' },
+        { image: 'assets/Notebook.jpg', title: 'Notebook portátil', subtitle: 'Rendimiento y diseño', link: '/producto/1' },
+        { image: 'assets/Sommier.jpg', title: 'Sommier premium', subtitle: 'Descanso y confort garantizado', link: '/producto/1' }
       ]"
       [visibleCount]="3"
-      [cardWidth]="'380px'"
+      [cardWidth]="'400px'"
       [cardHeight]="'650px'"
       [mostrarFlechas]="true"
       [autoplay]="true"
