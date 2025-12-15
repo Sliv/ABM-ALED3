@@ -68,23 +68,29 @@ export class ReporteriaDeVentasComponent
 
   ngOnInit() {}
 
-  ngAfterViewInit(): void {
-    this.verificarAdmin();
-    this.cargarEvolucionDolar();
+ngAfterViewInit(): void {
+  this.verificarAdmin(); 
+}
+
+ngOnDestroy(): void {
+  if (this.comprasUnsubscribe) this.comprasUnsubscribe();
+}
+
+private async verificarAdmin() {
+  const user = auth.currentUser;
+  if (user) {
+    const token = await user.getIdTokenResult(true);
+    this.esAdmin = !!token.claims['admin'];
   }
 
-  ngOnDestroy(): void {
-    if (this.comprasUnsubscribe) this.comprasUnsubscribe();
-  }
+  if (this.esAdmin) {
+    this.cargarComprasRealtime();
 
-  private async verificarAdmin() {
-    const user = auth.currentUser;
-    if (user) {
-      const token = await user.getIdTokenResult(true);
-      this.esAdmin = !!token.claims['admin'];
-    }
-    if (this.esAdmin) this.cargarComprasRealtime();
+    setTimeout(() => {
+      this.cargarEvolucionDolar();
+    });
   }
+}
 
   private cargarComprasRealtime() {
     const comprasRef = collection(db, 'Compras');

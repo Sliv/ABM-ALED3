@@ -1,63 +1,69 @@
 .newsletter-container {
-  width: 100%;
-  padding: 60px 20px;
-  background: linear-gradient(135deg, #1e1e1e, #343434);
+  width: 99vw;
+  margin-left: calc(-50vw + 50%);
+  background: linear-gradient(135deg, #111, #2b2b2b);
   color: white;
   display: flex;
   justify-content: center;
 }
 
 .newsletter-content {
-  max-width: 700px;
+  max-width: 900px;
+  width: 100%;
   text-align: center;
 }
 
 .newsletter-content h2 {
-  font-size: 2.4rem;
-  margin-bottom: 10px;
+  font-size: 2.6rem;
+  margin-bottom: 12px;
+  font-weight: 700;
 }
 
 .newsletter-content p {
   font-size: 1.1rem;
-  opacity: 0.8;
-  margin-bottom: 25px;
+  opacity: 0.85;
+  margin-bottom: 35px;
 }
 
 .newsletter-form {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
-  margin-bottom: 15px;
   flex-wrap: wrap;
 }
 
 .newsletter-form input {
-  padding: 15px 18px;
-  border-radius: 8px;
+  padding: 16px 20px;
+  border-radius: 10px;
   border: none;
   outline: none;
-  width: 260px;
+  width: 320px;
   font-size: 1rem;
+}
+
+.newsletter-form input::placeholder {
+  color: #999;
 }
 
 .newsletter-form button {
-  padding: 15px 20px;
+  padding: 16px 28px;
   border: none;
-  border-radius: 8px;
-  background-color: #4caf50;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
   color: white;
   font-size: 1rem;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .newsletter-form button:hover {
-  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
 .newsletter-note {
   display: block;
-  margin-top: 10px;
+  margin-top: 18px;
   font-size: 0.9rem;
-  opacity: 0.7;
+  opacity: 0.6;
 }
